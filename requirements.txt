@@ -1,0 +1,11 @@
+pandas
+numpy
+scipy
+scikit-learn
+librosa
+soundfile
+matplotlib
+torch
+nbformat
+nbclient
+ipykernel

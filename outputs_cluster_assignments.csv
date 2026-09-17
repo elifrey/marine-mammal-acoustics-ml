@@ -1,0 +1,226 @@
+species,group,isArctic,filename,path,durationSeconds,cluster
+BeardedSeal,Pinniped (seal / walrus),True,66036003.wav,data_raw/clips/BeardedSeal/66036003.wav,8.433560090702947,0
+BeardedSeal,Pinniped (seal / walrus),True,66036005.wav,data_raw/clips/BeardedSeal/66036005.wav,3.229433106575964,0
+BeardedSeal,Pinniped (seal / walrus),True,66037002.wav,data_raw/clips/BeardedSeal/66037002.wav,4.395873015873016,0
+BeardedSeal,Pinniped (seal / walrus),True,66038001.wav,data_raw/clips/BeardedSeal/66038001.wav,3.9058049886621315,1
+BeardedSeal,Pinniped (seal / walrus),True,66038002.wav,data_raw/clips/BeardedSeal/66038002.wav,6.109115646258504,0
+BeardedSeal,Pinniped (seal / walrus),True,66038003.wav,data_raw/clips/BeardedSeal/66038003.wav,6.539818594104308,0
+BeardedSeal,Pinniped (seal / walrus),True,66038004.wav,data_raw/clips/BeardedSeal/66038004.wav,8.174784580498866,0
+BeardedSeal,Pinniped (seal / walrus),True,66038005.wav,data_raw/clips/BeardedSeal/66038005.wav,8.174784580498866,0
+BeardedSeal,Pinniped (seal / walrus),True,66038006.wav,data_raw/clips/BeardedSeal/66038006.wav,2.1155102040816325,1
+BeardedSeal,Pinniped (seal / walrus),True,66038007.wav,data_raw/clips/BeardedSeal/66038007.wav,8.037006802721088,0
+BeardedSeal,Pinniped (seal / walrus),True,66039001.wav,data_raw/clips/BeardedSeal/66039001.wav,5.72766439909297,0
+BeardedSeal,Pinniped (seal / walrus),True,66039003.wav,data_raw/clips/BeardedSeal/66039003.wav,9.890612244897959,1
+BeardedSeal,Pinniped (seal / walrus),True,66039008.wav,data_raw/clips/BeardedSeal/66039008.wav,12.546122448979592,1
+BeardedSeal,Pinniped (seal / walrus),True,6603900C.wav,data_raw/clips/BeardedSeal/6603900C.wav,11.441632653061225,1
+BeardedSeal,Pinniped (seal / walrus),True,70025001.wav,data_raw/clips/BeardedSeal/70025001.wav,2.8359637188208615,1
+BeardedSeal,Pinniped (seal / walrus),True,70025002.wav,data_raw/clips/BeardedSeal/70025002.wav,2.704716553287982,1
+BeardedSeal,Pinniped (seal / walrus),True,70025003.wav,data_raw/clips/BeardedSeal/70025003.wav,2.8359637188208615,1
+BeardedSeal,Pinniped (seal / walrus),True,70025004.wav,data_raw/clips/BeardedSeal/70025004.wav,2.8359637188208615,1
+BeardedSeal,Pinniped (seal / walrus),True,70025005.wav,data_raw/clips/BeardedSeal/70025005.wav,1.4180045351473922,1
+BeardedSeal,Pinniped (seal / walrus),True,70025006.wav,data_raw/clips/BeardedSeal/70025006.wav,2.5640816326530613,1
+BeardedSeal,Pinniped (seal / walrus),True,70025007.wav,data_raw/clips/BeardedSeal/70025007.wav,2.104716553287982,1
+BeardedSeal,Pinniped (seal / walrus),True,70025008.wav,data_raw/clips/BeardedSeal/70025008.wav,1.321904761904762,1
+BeardedSeal,Pinniped (seal / walrus),True,70025009.wav,data_raw/clips/BeardedSeal/70025009.wav,1.9921995464852609,1
+BeardedSeal,Pinniped (seal / walrus),True,7002500A.wav,data_raw/clips/BeardedSeal/7002500A.wav,10.143764172335601,0
+BeardedSeal,Pinniped (seal / walrus),True,7002500B.wav,data_raw/clips/BeardedSeal/7002500B.wav,1.4180045351473922,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,49001001.wav,data_raw/clips/Beluga_WhiteWhale/49001001.wav,4.0882086167800455,0
+Beluga_WhiteWhale,Odontocete (toothed whale),True,62017001.wav,data_raw/clips/Beluga_WhiteWhale/62017001.wav,1.2459410430839002,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,62017006.wav,data_raw/clips/Beluga_WhiteWhale/62017006.wav,1.6457596371882086,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,6201700B.wav,data_raw/clips/Beluga_WhiteWhale/6201700B.wav,1.8880725623582766,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,6201700G.wav,data_raw/clips/Beluga_WhiteWhale/6201700G.wav,3.3992290249433106,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,62019001.wav,data_raw/clips/Beluga_WhiteWhale/62019001.wav,4.2588208616780046,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,62019007.wav,data_raw/clips/Beluga_WhiteWhale/62019007.wav,5.168571428571428,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,62022005.wav,data_raw/clips/Beluga_WhiteWhale/62022005.wav,0.15764172335600907,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,6202200A.wav,data_raw/clips/Beluga_WhiteWhale/6202200A.wav,1.8538775510204082,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,6202200K.wav,data_raw/clips/Beluga_WhiteWhale/6202200K.wav,1.3194557823129252,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,6202200U.wav,data_raw/clips/Beluga_WhiteWhale/6202200U.wav,1.4126984126984128,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,62022010.wav,data_raw/clips/Beluga_WhiteWhale/62022010.wav,2.099455782312925,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,62022015.wav,data_raw/clips/Beluga_WhiteWhale/62022015.wav,1.9532879818594104,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,6202201A.wav,data_raw/clips/Beluga_WhiteWhale/6202201A.wav,0.8504308390022676,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,62026005.wav,data_raw/clips/Beluga_WhiteWhale/62026005.wav,2.941043083900227,0
+Beluga_WhiteWhale,Odontocete (toothed whale),True,6202600A.wav,data_raw/clips/Beluga_WhiteWhale/6202600A.wav,2.007392290249433,0
+Beluga_WhiteWhale,Odontocete (toothed whale),True,63015002.wav,data_raw/clips/Beluga_WhiteWhale/63015002.wav,4.078639455782313,0
+Beluga_WhiteWhale,Odontocete (toothed whale),True,63015007.wav,data_raw/clips/Beluga_WhiteWhale/63015007.wav,1.6959637188208616,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,65030005.wav,data_raw/clips/Beluga_WhiteWhale/65030005.wav,0.6263492063492063,0
+Beluga_WhiteWhale,Odontocete (toothed whale),True,6503000A.wav,data_raw/clips/Beluga_WhiteWhale/6503000A.wav,0.6707936507936508,0
+Beluga_WhiteWhale,Odontocete (toothed whale),True,6503000F.wav,data_raw/clips/Beluga_WhiteWhale/6503000F.wav,1.3712925170068027,0
+Beluga_WhiteWhale,Odontocete (toothed whale),True,6503000K.wav,data_raw/clips/Beluga_WhiteWhale/6503000K.wav,1.7482086167800452,1
+Beluga_WhiteWhale,Odontocete (toothed whale),True,65031005.wav,data_raw/clips/Beluga_WhiteWhale/65031005.wav,0.5743310657596372,0
+Beluga_WhiteWhale,Odontocete (toothed whale),True,65033001.wav,data_raw/clips/Beluga_WhiteWhale/65033001.wav,1.0523809523809524,0
+Beluga_WhiteWhale,Odontocete (toothed whale),True,65033006.wav,data_raw/clips/Beluga_WhiteWhale/65033006.wav,1.1789115646258503,0
+BowheadWhale,Mysticete (baleen whale),True,7202100C.wav,data_raw/clips/BowheadWhale/7202100C.wav,1.4180045351473922,0
+BowheadWhale,Mysticete (baleen whale),True,7202100R.wav,data_raw/clips/BowheadWhale/7202100R.wav,1.3969160997732426,0
+BowheadWhale,Mysticete (baleen whale),True,72021017.wav,data_raw/clips/BowheadWhale/72021017.wav,5.221904761904762,0
+BowheadWhale,Mysticete (baleen whale),True,78018007.wav,data_raw/clips/BowheadWhale/78018007.wav,2.8312925170068026,1
+BowheadWhale,Mysticete (baleen whale),True,80001001.wav,data_raw/clips/BowheadWhale/80001001.wav,1.5276190476190477,0
+BowheadWhale,Mysticete (baleen whale),True,8000100G.wav,data_raw/clips/BowheadWhale/8000100G.wav,3.068843537414966,1
+BowheadWhale,Mysticete (baleen whale),True,88005005.wav,data_raw/clips/BowheadWhale/88005005.wav,4.732244897959184,1
+BowheadWhale,Mysticete (baleen whale),True,8800500K.wav,data_raw/clips/BowheadWhale/8800500K.wav,2.9917006802721087,0
+BowheadWhale,Mysticete (baleen whale),True,8800500Z.wav,data_raw/clips/BowheadWhale/8800500Z.wav,3.283219954648526,1
+BowheadWhale,Mysticete (baleen whale),True,8800501E.wav,data_raw/clips/BowheadWhale/8800501E.wav,5.373424036281179,1
+BowheadWhale,Mysticete (baleen whale),True,8800501T.wav,data_raw/clips/BowheadWhale/8800501T.wav,2.6082086167800456,0
+BowheadWhale,Mysticete (baleen whale),True,88005028.wav,data_raw/clips/BowheadWhale/88005028.wav,2.3184126984126983,0
+BowheadWhale,Mysticete (baleen whale),True,8800502N.wav,data_raw/clips/BowheadWhale/8800502N.wav,2.4332426303854877,0
+BowheadWhale,Mysticete (baleen whale),True,88005032.wav,data_raw/clips/BowheadWhale/88005032.wav,4.695600907029479,0
+BowheadWhale,Mysticete (baleen whale),True,8800503I.wav,data_raw/clips/BowheadWhale/8800503I.wav,2.3924263038548754,0
+BowheadWhale,Mysticete (baleen whale),True,8800503X.wav,data_raw/clips/BowheadWhale/8800503X.wav,6.835510204081633,0
+BowheadWhale,Mysticete (baleen whale),True,8800504C.wav,data_raw/clips/BowheadWhale/8800504C.wav,4.382403628117914,0
+BowheadWhale,Mysticete (baleen whale),True,8800504R.wav,data_raw/clips/BowheadWhale/8800504R.wav,9.728843537414965,0
+BowheadWhale,Mysticete (baleen whale),True,88005056.wav,data_raw/clips/BowheadWhale/88005056.wav,3.7536054421768705,0
+BowheadWhale,Mysticete (baleen whale),True,88006006.wav,data_raw/clips/BowheadWhale/88006006.wav,3.7755102040816326,1
+BowheadWhale,Mysticete (baleen whale),True,8800600L.wav,data_raw/clips/BowheadWhale/8800600L.wav,5.025034013605442,0
+BowheadWhale,Mysticete (baleen whale),True,88006010.wav,data_raw/clips/BowheadWhale/88006010.wav,2.041315192743764,0
+BowheadWhale,Mysticete (baleen whale),True,8800601G.wav,data_raw/clips/BowheadWhale/8800601G.wav,3.088843537414966,1
+BowheadWhale,Mysticete (baleen whale),True,8800601V.wav,data_raw/clips/BowheadWhale/8800601V.wav,3.118004535147392,1
+BowheadWhale,Mysticete (baleen whale),True,8800602B.wav,data_raw/clips/BowheadWhale/8800602B.wav,3.2188208616780045,1
+HumpbackWhale,Mysticete (baleen whale),False,52008002.wav,data_raw/clips/HumpbackWhale/52008002.wav,4.904852607709751,0
+HumpbackWhale,Mysticete (baleen whale),False,5401800P.wav,data_raw/clips/HumpbackWhale/5401800P.wav,5.879501133786848,1
+HumpbackWhale,Mysticete (baleen whale),False,5511300K.wav,data_raw/clips/HumpbackWhale/5511300K.wav,4.7871201814058955,1
+HumpbackWhale,Mysticete (baleen whale),False,5801800L.wav,data_raw/clips/HumpbackWhale/5801800L.wav,9.594013605442177,0
+HumpbackWhale,Mysticete (baleen whale),False,58018017.wav,data_raw/clips/HumpbackWhale/58018017.wav,7.862403628117914,1
+HumpbackWhale,Mysticete (baleen whale),False,61043003.wav,data_raw/clips/HumpbackWhale/61043003.wav,1.1250340136054422,1
+HumpbackWhale,Mysticete (baleen whale),False,6301900T.wav,data_raw/clips/HumpbackWhale/6301900T.wav,1.387528344671202,0
+HumpbackWhale,Mysticete (baleen whale),False,6301901V.wav,data_raw/clips/HumpbackWhale/6301901V.wav,11.193242630385488,1
+HumpbackWhale,Mysticete (baleen whale),False,7501700A.wav,data_raw/clips/HumpbackWhale/7501700A.wav,3.0,1
+HumpbackWhale,Mysticete (baleen whale),False,79022002.wav,data_raw/clips/HumpbackWhale/79022002.wav,8.377641723356009,1
+HumpbackWhale,Mysticete (baleen whale),False,8002000B.wav,data_raw/clips/HumpbackWhale/8002000B.wav,1.0477551020408162,0
+HumpbackWhale,Mysticete (baleen whale),False,8002000X.wav,data_raw/clips/HumpbackWhale/8002000X.wav,2.826575963718821,1
+HumpbackWhale,Mysticete (baleen whale),False,8002001I.wav,data_raw/clips/HumpbackWhale/8002001I.wav,1.612517006802721,1
+HumpbackWhale,Mysticete (baleen whale),False,86008005.wav,data_raw/clips/HumpbackWhale/86008005.wav,8.233832199546486,0
+HumpbackWhale,Mysticete (baleen whale),False,8600800T.wav,data_raw/clips/HumpbackWhale/8600800T.wav,9.525396825396825,1
+HumpbackWhale,Mysticete (baleen whale),False,8600801G.wav,data_raw/clips/HumpbackWhale/8600801G.wav,4.826848072562358,0
+HumpbackWhale,Mysticete (baleen whale),False,86008022.wav,data_raw/clips/HumpbackWhale/86008022.wav,6.676689342403628,1
+HumpbackWhale,Mysticete (baleen whale),False,8600802N.wav,data_raw/clips/HumpbackWhale/8600802N.wav,1.3094331065759637,1
+HumpbackWhale,Mysticete (baleen whale),False,86008038.wav,data_raw/clips/HumpbackWhale/86008038.wav,3.912018140589569,1
+HumpbackWhale,Mysticete (baleen whale),False,8600803T.wav,data_raw/clips/HumpbackWhale/8600803T.wav,1.3575963718820863,1
+HumpbackWhale,Mysticete (baleen whale),False,8600804E.wav,data_raw/clips/HumpbackWhale/8600804E.wav,1.1919727891156462,1
+HumpbackWhale,Mysticete (baleen whale),False,8600804Z.wav,data_raw/clips/HumpbackWhale/8600804Z.wav,1.522857142857143,1
+HumpbackWhale,Mysticete (baleen whale),False,8600805K.wav,data_raw/clips/HumpbackWhale/8600805K.wav,3.8367800453514738,0
+HumpbackWhale,Mysticete (baleen whale),False,86008065.wav,data_raw/clips/HumpbackWhale/86008065.wav,1.5356009070294785,1
+HumpbackWhale,Mysticete (baleen whale),False,8600806Q.wav,data_raw/clips/HumpbackWhale/8600806Q.wav,1.846984126984127,1
+KillerWhale,Odontocete (toothed whale),False,60012001.wav,data_raw/clips/KillerWhale/60012001.wav,2.918140589569161,1
+KillerWhale,Odontocete (toothed whale),False,6002602C.wav,data_raw/clips/KillerWhale/6002602C.wav,3.0350113378684807,1
+KillerWhale,Odontocete (toothed whale),False,6002606D.wav,data_raw/clips/KillerWhale/6002606D.wav,1.4041269841269841,0
+KillerWhale,Odontocete (toothed whale),False,6403000Z.wav,data_raw/clips/KillerWhale/6403000Z.wav,2.0496145124716554,1
+KillerWhale,Odontocete (toothed whale),False,6403102V.wav,data_raw/clips/KillerWhale/6403102V.wav,1.7569614512471656,0
+KillerWhale,Odontocete (toothed whale),False,894050C0.wav,data_raw/clips/KillerWhale/894050C0.wav,0.4378231292517007,0
+KillerWhale,Odontocete (toothed whale),False,894050EX.wav,data_raw/clips/KillerWhale/894050EX.wav,1.8411337868480726,1
+KillerWhale,Odontocete (toothed whale),False,9230001G.wav,data_raw/clips/KillerWhale/9230001G.wav,5.279637188208617,0
+KillerWhale,Odontocete (toothed whale),False,9230100K.wav,data_raw/clips/KillerWhale/9230100K.wav,4.631972789115646,0
+KillerWhale,Odontocete (toothed whale),False,9230202I.wav,data_raw/clips/KillerWhale/9230202I.wav,5.307346938775511,0
+KillerWhale,Odontocete (toothed whale),False,92304026.wav,data_raw/clips/KillerWhale/92304026.wav,0.8898866213151927,0
+KillerWhale,Odontocete (toothed whale),False,97500006.wav,data_raw/clips/KillerWhale/97500006.wav,2.3482086167800453,1
+KillerWhale,Odontocete (toothed whale),False,9750301K.wav,data_raw/clips/KillerWhale/9750301K.wav,2.0713378684807258,1
+KillerWhale,Odontocete (toothed whale),False,9750402D.wav,data_raw/clips/KillerWhale/9750402D.wav,4.462131519274377,1
+KillerWhale,Odontocete (toothed whale),False,97619012.wav,data_raw/clips/KillerWhale/97619012.wav,2.8234013605442176,1
+KillerWhale,Odontocete (toothed whale),False,9774100C.wav,data_raw/clips/KillerWhale/9774100C.wav,1.2975510204081633,1
+KillerWhale,Odontocete (toothed whale),False,97745004.wav,data_raw/clips/KillerWhale/97745004.wav,1.6650340136054422,1
+KillerWhale,Odontocete (toothed whale),False,9775000G.wav,data_raw/clips/KillerWhale/9775000G.wav,2.422902494331066,1
+KillerWhale,Odontocete (toothed whale),False,9775400H.wav,data_raw/clips/KillerWhale/9775400H.wav,1.0959183673469388,0
+KillerWhale,Odontocete (toothed whale),False,97756012.wav,data_raw/clips/KillerWhale/97756012.wav,1.2098866213151926,0
+KillerWhale,Odontocete (toothed whale),False,9775900L.wav,data_raw/clips/KillerWhale/9775900L.wav,1.0024036281179138,0
+KillerWhale,Odontocete (toothed whale),False,97761017.wav,data_raw/clips/KillerWhale/97761017.wav,1.8817233560090703,0
+KillerWhale,Odontocete (toothed whale),False,9776600N.wav,data_raw/clips/KillerWhale/9776600N.wav,0.8182766439909297,0
+KillerWhale,Odontocete (toothed whale),False,97772008.wav,data_raw/clips/KillerWhale/97772008.wav,0.9147392290249433,1
+KillerWhale,Odontocete (toothed whale),False,9777600L.wav,data_raw/clips/KillerWhale/9777600L.wav,5.087891156462585,0
+Narwhal,Odontocete (toothed whale),True,65011001.wav,data_raw/clips/Narwhal/65011001.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,65011004.wav,data_raw/clips/Narwhal/65011004.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,65011007.wav,data_raw/clips/Narwhal/65011007.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,68002002.wav,data_raw/clips/Narwhal/68002002.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,68002005.wav,data_raw/clips/Narwhal/68002005.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,68002008.wav,data_raw/clips/Narwhal/68002008.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,6800200B.wav,data_raw/clips/Narwhal/6800200B.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,6800200E.wav,data_raw/clips/Narwhal/6800200E.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,68003006.wav,data_raw/clips/Narwhal/68003006.wav,1.795328798185941,1
+Narwhal,Odontocete (toothed whale),True,6800300B.wav,data_raw/clips/Narwhal/6800300B.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,6804000F.wav,data_raw/clips/Narwhal/6804000F.wav,0.30643990929705217,1
+Narwhal,Odontocete (toothed whale),True,6804000J.wav,data_raw/clips/Narwhal/6804000J.wav,1.1419954648526076,1
+Narwhal,Odontocete (toothed whale),True,6804000N.wav,data_raw/clips/Narwhal/6804000N.wav,1.0779138321995465,1
+Narwhal,Odontocete (toothed whale),True,6804000S.wav,data_raw/clips/Narwhal/6804000S.wav,3.179410430839002,1
+Narwhal,Odontocete (toothed whale),True,75014003.wav,data_raw/clips/Narwhal/75014003.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,75014006.wav,data_raw/clips/Narwhal/75014006.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,75014009.wav,data_raw/clips/Narwhal/75014009.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,7501400C.wav,data_raw/clips/Narwhal/7501400C.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,7501400F.wav,data_raw/clips/Narwhal/7501400F.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,7501400I.wav,data_raw/clips/Narwhal/7501400I.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,7501400L.wav,data_raw/clips/Narwhal/7501400L.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,7501400O.wav,data_raw/clips/Narwhal/7501400O.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,7501400R.wav,data_raw/clips/Narwhal/7501400R.wav,1.4180045351473922,1
+Narwhal,Odontocete (toothed whale),True,7501400U.wav,data_raw/clips/Narwhal/7501400U.wav,1.4180045351473922,0
+Narwhal,Odontocete (toothed whale),True,7501400X.wav,data_raw/clips/Narwhal/7501400X.wav,1.4180045351473922,0
+NorthernRightWhale,Mysticete (baleen whale),False,56015001.wav,data_raw/clips/NorthernRightWhale/56015001.wav,1.562766439909297,0
+NorthernRightWhale,Mysticete (baleen whale),False,56016002.wav,data_raw/clips/NorthernRightWhale/56016002.wav,2.629160997732426,1
+NorthernRightWhale,Mysticete (baleen whale),False,5601600M.wav,data_raw/clips/NorthernRightWhale/5601600M.wav,0.7977777777777778,1
+NorthernRightWhale,Mysticete (baleen whale),False,56016016.wav,data_raw/clips/NorthernRightWhale/56016016.wav,1.689750566893424,1
+NorthernRightWhale,Mysticete (baleen whale),False,5601601O.wav,data_raw/clips/NorthernRightWhale/5601601O.wav,1.4508843537414966,0
+NorthernRightWhale,Mysticete (baleen whale),False,56017008.wav,data_raw/clips/NorthernRightWhale/56017008.wav,1.63297052154195,0
+NorthernRightWhale,Mysticete (baleen whale),False,5601700Q.wav,data_raw/clips/NorthernRightWhale/5601700Q.wav,1.0452154195011338,0
+NorthernRightWhale,Mysticete (baleen whale),False,56018001.wav,data_raw/clips/NorthernRightWhale/56018001.wav,1.6364172335600906,0
+NorthernRightWhale,Mysticete (baleen whale),False,5602500D.wav,data_raw/clips/NorthernRightWhale/5602500D.wav,3.8321995464852607,1
+NorthernRightWhale,Mysticete (baleen whale),False,5602600A.wav,data_raw/clips/NorthernRightWhale/5602600A.wav,2.6947392290249432,1
+NorthernRightWhale,Mysticete (baleen whale),False,5606800O.wav,data_raw/clips/NorthernRightWhale/5606800O.wav,1.4180045351473922,1
+NorthernRightWhale,Mysticete (baleen whale),False,59001007.wav,data_raw/clips/NorthernRightWhale/59001007.wav,2.306439909297052,1
+NorthernRightWhale,Mysticete (baleen whale),False,5900300D.wav,data_raw/clips/NorthernRightWhale/5900300D.wav,2.182403628117914,1
+NorthernRightWhale,Mysticete (baleen whale),False,59004006.wav,data_raw/clips/NorthernRightWhale/59004006.wav,1.4658049886621316,1
+NorthernRightWhale,Mysticete (baleen whale),False,59005001.wav,data_raw/clips/NorthernRightWhale/59005001.wav,2.427619047619048,1
+NorthernRightWhale,Mysticete (baleen whale),False,70014003.wav,data_raw/clips/NorthernRightWhale/70014003.wav,1.2843990929705216,1
+NorthernRightWhale,Mysticete (baleen whale),False,7001400L.wav,data_raw/clips/NorthernRightWhale/7001400L.wav,1.3148752834467121,1
+NorthernRightWhale,Mysticete (baleen whale),False,70017005.wav,data_raw/clips/NorthernRightWhale/70017005.wav,2.2278004535147393,1
+NorthernRightWhale,Mysticete (baleen whale),False,70018007.wav,data_raw/clips/NorthernRightWhale/70018007.wav,1.1760090702947845,1
+NorthernRightWhale,Mysticete (baleen whale),False,7001800P.wav,data_raw/clips/NorthernRightWhale/7001800P.wav,1.7885260770975058,1
+NorthernRightWhale,Mysticete (baleen whale),False,81013001.wav,data_raw/clips/NorthernRightWhale/81013001.wav,2.5369160997732427,1
+NorthernRightWhale,Mysticete (baleen whale),False,8101301J.wav,data_raw/clips/NorthernRightWhale/8101301J.wav,2.706077097505669,1
+NorthernRightWhale,Mysticete (baleen whale),False,8101402I.wav,data_raw/clips/NorthernRightWhale/8101402I.wav,2.2554648526077097,1
+NorthernRightWhale,Mysticete (baleen whale),False,81014030.wav,data_raw/clips/NorthernRightWhale/81014030.wav,2.7455328798185943,1
+NorthernRightWhale,Mysticete (baleen whale),False,8101403J.wav,data_raw/clips/NorthernRightWhale/8101403J.wav,2.2225850340136053,1
+RingedSeal,Pinniped (seal / walrus),True,63005001.wav,data_raw/clips/RingedSeal/63005001.wav,1.9462585034013606,1
+RingedSeal,Pinniped (seal / walrus),True,68003001.wav,data_raw/clips/RingedSeal/68003001.wav,2.8359637188208615,1
+RingedSeal,Pinniped (seal / walrus),True,68003002.wav,data_raw/clips/RingedSeal/68003002.wav,0.7090249433106576,1
+RingedSeal,Pinniped (seal / walrus),True,68003009.wav,data_raw/clips/RingedSeal/68003009.wav,2.0531519274376415,1
+RingedSeal,Pinniped (seal / walrus),True,6800300C.wav,data_raw/clips/RingedSeal/6800300C.wav,1.4180045351473922,1
+RingedSeal,Pinniped (seal / walrus),True,68005001.wav,data_raw/clips/RingedSeal/68005001.wav,4.904852607709751,0
+RingedSeal,Pinniped (seal / walrus),True,68005002.wav,data_raw/clips/RingedSeal/68005002.wav,4.904852607709751,0
+RingedSeal,Pinniped (seal / walrus),True,68005003.wav,data_raw/clips/RingedSeal/68005003.wav,0.773469387755102,0
+RingedSeal,Pinniped (seal / walrus),True,68005004.wav,data_raw/clips/RingedSeal/68005004.wav,0.773469387755102,1
+RingedSeal,Pinniped (seal / walrus),True,68005005.wav,data_raw/clips/RingedSeal/68005005.wav,0.19197278911564625,1
+RingedSeal,Pinniped (seal / walrus),True,68005006.wav,data_raw/clips/RingedSeal/68005006.wav,0.20430839002267573,1
+RingedSeal,Pinniped (seal / walrus),True,68005007.wav,data_raw/clips/RingedSeal/68005007.wav,0.26326530612244897,1
+RingedSeal,Pinniped (seal / walrus),True,68005008.wav,data_raw/clips/RingedSeal/68005008.wav,0.2865759637188209,1
+RingedSeal,Pinniped (seal / walrus),True,68005009.wav,data_raw/clips/RingedSeal/68005009.wav,0.13165532879818595,1
+RingedSeal,Pinniped (seal / walrus),True,6800500A.wav,data_raw/clips/RingedSeal/6800500A.wav,0.17482993197278912,1
+RingedSeal,Pinniped (seal / walrus),True,6800500B.wav,data_raw/clips/RingedSeal/6800500B.wav,0.1620408163265306,1
+RingedSeal,Pinniped (seal / walrus),True,6800500C.wav,data_raw/clips/RingedSeal/6800500C.wav,0.291609977324263,1
+RingedSeal,Pinniped (seal / walrus),True,6800500D.wav,data_raw/clips/RingedSeal/6800500D.wav,0.19442176870748298,1
+RingedSeal,Pinniped (seal / walrus),True,6800500E.wav,data_raw/clips/RingedSeal/6800500E.wav,0.23492063492063492,1
+RingedSeal,Pinniped (seal / walrus),True,6800500F.wav,data_raw/clips/RingedSeal/6800500F.wav,0.13936507936507936,1
+RingedSeal,Pinniped (seal / walrus),True,6800500G.wav,data_raw/clips/RingedSeal/6800500G.wav,0.1458049886621315,1
+RingedSeal,Pinniped (seal / walrus),True,6800500H.wav,data_raw/clips/RingedSeal/6800500H.wav,0.1820408163265306,1
+RingedSeal,Pinniped (seal / walrus),True,6800500I.wav,data_raw/clips/RingedSeal/6800500I.wav,0.2592290249433107,1
+RingedSeal,Pinniped (seal / walrus),True,6800500J.wav,data_raw/clips/RingedSeal/6800500J.wav,0.11732426303854876,1
+RingedSeal,Pinniped (seal / walrus),True,6800500K.wav,data_raw/clips/RingedSeal/6800500K.wav,0.4586394557823129,1
+Walrus,Pinniped (seal / walrus),True,66006001.wav,data_raw/clips/Walrus/66006001.wav,4.57437641723356,0
+Walrus,Pinniped (seal / walrus),True,70024004.wav,data_raw/clips/Walrus/70024004.wav,2.3859410430839003,0
+Walrus,Pinniped (seal / walrus),True,72002006.wav,data_raw/clips/Walrus/72002006.wav,3.061269841269841,1
+Walrus,Pinniped (seal / walrus),True,7200200J.wav,data_raw/clips/Walrus/7200200J.wav,3.415238095238095,1
+Walrus,Pinniped (seal / walrus),True,72014002.wav,data_raw/clips/Walrus/72014002.wav,1.0406349206349206,0
+Walrus,Pinniped (seal / walrus),True,7201400C.wav,data_raw/clips/Walrus/7201400C.wav,1.4180045351473922,0
+Walrus,Pinniped (seal / walrus),True,72016004.wav,data_raw/clips/Walrus/72016004.wav,1.9031292517006804,0
+Walrus,Pinniped (seal / walrus),True,72017003.wav,data_raw/clips/Walrus/72017003.wav,4.631292517006803,0
+Walrus,Pinniped (seal / walrus),True,7201700E.wav,data_raw/clips/Walrus/7201700E.wav,5.146893424036281,0
+Walrus,Pinniped (seal / walrus),True,72019002.wav,data_raw/clips/Walrus/72019002.wav,4.312517006802721,0
+Walrus,Pinniped (seal / walrus),True,7201900C.wav,data_raw/clips/Walrus/7201900C.wav,6.356281179138322,0
+Walrus,Pinniped (seal / walrus),True,72020008.wav,data_raw/clips/Walrus/72020008.wav,3.287482993197279,1
+Walrus,Pinniped (seal / walrus),True,83001007.wav,data_raw/clips/Walrus/83001007.wav,1.42,0
+Walrus,Pinniped (seal / walrus),True,8300100H.wav,data_raw/clips/Walrus/8300100H.wav,1.3825396825396825,0
+Walrus,Pinniped (seal / walrus),True,8300100R.wav,data_raw/clips/Walrus/8300100R.wav,0.9390022675736961,0
+Walrus,Pinniped (seal / walrus),True,83001012.wav,data_raw/clips/Walrus/83001012.wav,1.2551020408163265,0
+Walrus,Pinniped (seal / walrus),True,8300101C.wav,data_raw/clips/Walrus/8300101C.wav,1.5771428571428572,0
+Walrus,Pinniped (seal / walrus),True,8300101M.wav,data_raw/clips/Walrus/8300101M.wav,0.9533333333333334,0
+Walrus,Pinniped (seal / walrus),True,8300101W.wav,data_raw/clips/Walrus/8300101W.wav,1.2528344671201814,0
+Walrus,Pinniped (seal / walrus),True,83001026.wav,data_raw/clips/Walrus/83001026.wav,0.9917006802721089,0
+Walrus,Pinniped (seal / walrus),True,8300102G.wav,data_raw/clips/Walrus/8300102G.wav,1.0304308390022676,0
+Walrus,Pinniped (seal / walrus),True,8300102Q.wav,data_raw/clips/Walrus/8300102Q.wav,0.6496145124716554,0
+Walrus,Pinniped (seal / walrus),True,83001030.wav,data_raw/clips/Walrus/83001030.wav,1.0208163265306123,0
+Walrus,Pinniped (seal / walrus),True,8300103A.wav,data_raw/clips/Walrus/8300103A.wav,0.8224036281179138,0
+Walrus,Pinniped (seal / walrus),True,8300103K.wav,data_raw/clips/Walrus/8300103K.wav,3.3315192743764173,0
