@@ -1,5 +1,7 @@
 # Arctic and subarctic marine mammal call classification
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22859088.svg)](https://doi.org/10.5281/zenodo.22859088)
+
 A second one day machine learning demonstration built while applying for the
 AWI/MarDATA PhD position in Data Science and Bioinformatics for Marine and
 Arctic Biodiversity, this one aimed squarely at the posting's sequence data
@@ -138,3 +140,9 @@ figures_*.png            all generated plots (analysis.py recreates these under 
 outputs_*.csv / .txt     feature table, cluster assignments, classifier reports, model summary
 LICENSE_DATA.md          data attribution and citation
 ```
+
+## How to cite
+
+> Frey, E. (2026). elifrey/marine-mammal-acoustics-ml: Arctic and subarctic marine mammal call classification (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.22859088
+
+That DOI always resolves to the latest version. The v1.0.0 snapshot is 10.5281/zenodo.22859089.
