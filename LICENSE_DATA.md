@@ -32,3 +32,23 @@ Hole Oceanographic Institution.
 name and size as extracted from the archive. The audio itself is not
 committed to this repository; `analysis.py` downloads exactly these 225
 clips directly from the mirror the first time it runs.
+
+## My derived outputs
+
+The source audio above is not mine and is reused under the terms of the Watkins
+database. Everything I produced from it is.
+
+The extracted acoustic feature tables, the derived result tables, the figures and
+the trained model outputs in this repository are my own work and are released under
+the Creative Commons Attribution 4.0 International Licence (CC BY 4.0):
+
+https://creativecommons.org/licenses/by/4.0/
+
+Reuse them freely, including commercially, with credit:
+
+> Frey, E. (2026). Arctic and subarctic marine mammal call classification (v1.0.0).
+> Zenodo. https://doi.org/10.5281/zenodo.22859088 ORCID 0009-0002-7482-7986
+
+This CC BY 4.0 grant covers my derived outputs only. It does not extend to the raw
+audio clips, which remain subject to the Watkins database terms above. The analysis
+code is MIT licensed, see `LICENSE`.
