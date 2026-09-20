@@ -2,6 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22859088.svg)](https://doi.org/10.5281/zenodo.22859088)
 
+**Write up:** [Can AI tell a narwhal from a bowhead whale by sound alone?](https://simplyecologist.com/ai-marine-mammal-call-classification/), a plain language walkthrough of the method and the results.
+
 A second one day machine learning demonstration built while applying for the
 AWI/MarDATA PhD position in Data Science and Bioinformatics for Marine and
 Arctic Biodiversity, this one aimed squarely at the posting's sequence data
