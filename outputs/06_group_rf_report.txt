@@ -1,0 +1,9 @@
+              precision    recall  f1-score   support
+
+   Mysticete       0.85      0.96      0.90      1496
+  Odontocete       0.96      0.98      0.97      2883
+    Pinniped       0.49      0.15      0.24       382
+
+    accuracy                           0.90      4761
+   macro avg       0.76      0.70      0.70      4761
+weighted avg       0.88      0.90      0.89      4761
