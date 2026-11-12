@@ -98,18 +98,31 @@ exactly those files.
 | 9 species | Random forest | Random | 97% (0%) | 89% (3%) | 0.92 |
 | 9 species | Random forest | **Grouped** | 74% (9%) | 49% (7%) | 0.43 |
 | 9 species | Transformer | **Grouped** | 59% (11%) | 42% (6%) | 0.35 |
+| 9 species | BirdNET v2.4 embeddings + logistic regression | Random | 98% (0%) | 95% (1%) | 0.95 |
+| 9 species | BirdNET v2.4 embeddings + logistic regression | **Grouped** | 80% (4%) | 66% (11%) | 0.51 |
+| 9 species | Perch 2.0 embeddings + logistic regression | Random | 98% (0%) | 96% (1%) | 0.95 |
+| 9 species | Perch 2.0 embeddings + logistic regression | **Grouped** | 79% (4%) | 69% (7%) | 0.56 |
 | 3 groups | Majority class |  | 61% | 33% |  |
 | 3 groups | Random forest | Random | 97% (1%) | 92% (3%) | 0.94 |
 | 3 groups | Random forest | **Grouped** | 91% (5%) | 71% (8%) | 0.70 |
 | 3 groups | Transformer | **Grouped** | 82% (7%) | 71% (7%) | 0.68 |
+| 3 groups | BirdNET v2.4 embeddings + logistic regression | Random | 99% (0%) | 97% (2%) | 0.97 |
+| 3 groups | BirdNET v2.4 embeddings + logistic regression | **Grouped** | 90% (5%) | 81% (8%) | 0.77 |
+| 3 groups | Perch 2.0 embeddings + logistic regression | Random | 99% (0%) | 98% (1%) | 0.98 |
+| 3 groups | Perch 2.0 embeddings + logistic regression | **Grouped** | 91% (4%) | 83% (7%) | 0.78 |
 
 ![Leakage: grouped vs random split](figures/paper_03_leakage_grouped_vs_random.png)
 
 ![Model comparison](figures/paper_04_model_comparison.png)
 
 All figures are in `figures/` (the `paper_*` set is publication formatted at
-300 dpi) and every number above is in `outputs/model_summary.csv`, with per
-species F1 scores in `outputs/rf_per_species_f1.csv`.
+300 dpi) and every number above is in `outputs/model_summary.csv` and
+`outputs/pretrained_summary.csv`, with per species F1 scores in
+`outputs/rf_per_species_f1.csv`.
+
+Pretrained embeddings did best on unseen tapes, but random splits still
+inflated their species balanced accuracy by 28 (BirdNET) and 26 (Perch 2.0)
+points, so leakage is not a problem of weak models only.
 
 ## Limitations
 
@@ -121,7 +134,10 @@ species F1 scores in `outputs/rf_per_species_f1.csv`.
 - Labels come from the database's species folders and were not
   independently reverified.
 - The transformer sees only the first ~1.5 s of each clip and is trained
-  from scratch; pretrained bioacoustic models would very likely do better.
+  from scratch. The pretrained models (BirdNET, Perch 2.0) use the first 30 s
+  and were trained mainly on bird and other terrestrial sounds; a model
+  trained on marine mammals may describe very low frequency calls and very
+  high frequency clicks better.
 - No location, season or behavioural context is used, only the audio.
 
 ## Reproducing this
@@ -134,6 +150,20 @@ EPOCHS=25 python analysis.py      # outputs/ and figures/, about 75 min on 2 CPU
 python make_figures.py            # figures/paper_*.png
 ```
 
+Pretrained embeddings (v1.2.0):
+
+```
+pip install birdnetlib ai-edge-litert "tensorflow-cpu~=2.20.0"
+python pretrained/embed_birdnet.py                     # feat/birdnet_embeddings.npz
+PERCH_DIR=path/to/perch_v2_cpu python pretrained/embed_perch2.py   # feat/perch2_embeddings.npz
+python pretrained/evaluate_embeddings.py perch2 lr species   # also: birdnet, group, rf
+```
+
+Perch 2.0 (perch_v2_cpu, Apache 2.0) is downloaded from
+https://www.kaggle.com/models/google/bird-vocalization-classifier; the
+BirdNET v2.4 model file ships with birdnetlib. On two CPU cores the BirdNET
+embeddings take about 8 minutes and the Perch 2.0 embeddings about 90 minutes.
+
 ## Repository layout
 
 ```
@@ -142,6 +172,7 @@ download_clips.py        fetches the clips from the Internet Archive mirror
 extract_features.py      resampling, 90 acoustic features, log mel spectrograms
 analysis.py              clustering, random forests, baselines, transformer, grouped and random CV
 make_figures.py          publication figures and per species scores
+pretrained/               BirdNET and Perch 2.0 embeddings and their evaluation
 figures/  outputs/       all generated figures and result tables
 LICENSE                  MIT, for the code
 LICENSE_DATA.md          data attribution; CC BY 4.0 for derived outputs
@@ -155,9 +186,16 @@ cross validates every model with folds grouped by recording session, adds the
 random split comparison, baselines and balanced accuracy, and replaces the
 download endpoint used by v1.0.0, which no longer resolves.
 
+## Changes since v1.1.0
+
+v1.2.0 adds two pretrained bioacoustic models, BirdNET v2.4 and Perch 2.0.
+Their embeddings are classified with a logistic regression and evaluated
+with the same grouped and random folds as the other models
+(`outputs/pretrained_summary.csv`).
+
 ## How to cite
 
-> Frey, E. (2026). Marine mammal call classification with random forest and transformer models on 4,761 Watkins recordings (v1.1.0). Zenodo. https://doi.org/10.5281/zenodo.22859088
+> Frey, E. (2026). Marine mammal call classification with random forest and transformer models on 4,761 Watkins recordings (v1.2.0). Zenodo. https://doi.org/10.5281/zenodo.22859088
 
 The concept DOI above always resolves to the latest version. Please also cite
 the data source:
