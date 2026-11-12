@@ -7,7 +7,7 @@
       "orcid": "0009-0002-7482-7986"
     }
   ],
-  "description": "Classification of nine Arctic and subarctic marine mammal species and three taxonomic groups from 4,761 recordings of the Watkins Marine Mammal Sound Database, comparing a random forest on 90 acoustic features with a transformer trained from scratch on log mel spectrograms. All models are evaluated with 5 fold cross validation grouped by recording session, and the same models are also scored with random splits to measure how much leakage between clips from the same recording tape inflates accuracy.",
+  "description": "Classification of nine Arctic and subarctic marine mammal species and three taxonomic groups from 4,761 recordings of the Watkins Marine Mammal Sound Database, comparing a random forest on 90 acoustic features, a transformer trained from scratch on log mel spectrograms, and linear classifiers on embeddings from the pretrained BirdNET v2.4 and Perch 2.0 models. All models are evaluated with 5 fold cross validation grouped by recording session, and the same models are also scored with random splits to measure how much leakage between clips from the same recording tape inflates accuracy.",
   "keywords": [
     "bioacoustics",
     "marine mammals",
@@ -17,7 +17,10 @@
     "cross validation",
     "data leakage",
     "Watkins Marine Mammal Sound Database",
-    "Arctic"
+    "Arctic",
+    "BirdNET",
+    "Perch",
+    "transfer learning"
   ],
   "license": "MIT"
 }
