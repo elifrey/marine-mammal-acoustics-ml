@@ -13,6 +13,8 @@ the Watkins clips were digitised at many different sample rates.
 
     python extract_features.py          # writes feat/<species>.npz
 """
+from __future__ import annotations
+
 import glob
 import os
 
@@ -23,12 +25,12 @@ import soundfile as sf
 TARGET_SR, N_MFCC, N_MELS, N_FRAMES = 22050, 20, 64, 128
 
 
-def _pool(feature):
+def _pool(feature: np.ndarray) -> np.ndarray:
     """Mean and SD over time for every row of a (n_features, n_frames) array."""
     return np.concatenate([feature.mean(axis=1), feature.std(axis=1)])
 
 
-def classical(y):
+def classical(y: np.ndarray) -> np.ndarray:
     """90 classical acoustic features for one clip at TARGET_SR."""
     mfcc = librosa.feature.mfcc(y=y, sr=TARGET_SR, n_mfcc=N_MFCC)
     # delta needs an odd window no longer than the clip
@@ -44,7 +46,7 @@ def classical(y):
     return np.concatenate([_pool(p) for p in parts]).astype(np.float32)
 
 
-def mel(y):
+def mel(y: np.ndarray) -> np.ndarray:
     """64 x 128 log mel spectrogram, z scored within the clip and stored as uint8."""
     power = librosa.feature.melspectrogram(y=y, sr=TARGET_SR, n_mels=N_MELS, n_fft=1024, hop_length=256)
     log_mel = librosa.power_to_db(power, ref=np.max)
@@ -54,7 +56,7 @@ def mel(y):
     return np.clip(np.round((np.clip(z, -4, 4) + 4) / 8 * 255), 0, 255).astype(np.uint8)
 
 
-def load_clip(path):
+def load_clip(path: str) -> tuple[np.ndarray, int]:
     """Read a wav file, mix to mono, resample to TARGET_SR and pad very short clips."""
     data, sr = sf.read(path, always_2d=True, dtype="float32")
     y = data.mean(axis=1)
@@ -65,7 +67,7 @@ def load_clip(path):
     return y, sr
 
 
-def extract_species(species_dir, out_path):
+def extract_species(species_dir: str, out_path: str) -> None:
     """Features, spectrograms and metadata for every clip of one species."""
     species = os.path.basename(os.path.dirname(species_dir))
     features, mels, meta, unreadable = [], [], [], []
@@ -83,7 +85,7 @@ def extract_species(species_dir, out_path):
     print(out_path, len(meta), "clips,", len(unreadable), "unreadable", flush=True)
 
 
-def main():
+def main() -> None:
     os.makedirs("feat", exist_ok=True)
     for species_dir in sorted(glob.glob("data_raw/*/")):
         species = os.path.basename(os.path.dirname(species_dir))

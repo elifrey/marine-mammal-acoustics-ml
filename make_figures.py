@@ -8,7 +8,9 @@ random forest out of fold predictions (same folds and seeds as analysis.py)
 for per species scores, and writes figures/paper_*.png (300 dpi) plus
 outputs/rf_per_species_f1.csv.
 """
-import sys
+from __future__ import annotations
+
+import argparse
 
 import matplotlib
 import numpy as np
@@ -20,12 +22,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, f1_score
 from sklearn.preprocessing import StandardScaler
 
-from common import SEED, SPECIES_GROUP, load_features, make_folds
+from common import FIG_DIR, OUT_DIR, RF_TREES, SEED, SPECIES_GROUP, load_features, make_folds
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402  (backend must be set first)
-
-FIG_DIR, OUT_DIR = "figures", "outputs"
 
 # ---------------------------------------------------------------- style
 INK, INK2, GRID, SURF = "#0b0b0b", "#52514e", "#e4e3df", "#ffffff"
@@ -58,7 +58,7 @@ FEATURE_FAMILIES = [
 ]
 
 
-def set_style():
+def set_style() -> None:
     plt.rcParams.update({
         "font.family": "DejaVu Sans", "font.size": 9, "axes.edgecolor": INK2, "axes.labelcolor": INK,
         "xtick.color": INK2, "ytick.color": INK2, "text.color": INK, "axes.spines.top": False,
@@ -68,24 +68,24 @@ def set_style():
     })
 
 
-def save(name):
+def save(name: str) -> None:
     plt.savefig(f"{FIG_DIR}/{name}.png")
     plt.close()
     print("wrote", name)
 
 
-def add_ygrid(ax):
+def add_ygrid(ax: plt.Axes) -> None:
     ax.yaxis.grid(True, color=GRID, lw=0.6)
     ax.set_axisbelow(True)
 
 
-def suptitle(fig, text):
+def suptitle(fig: plt.Figure, text: str) -> None:
     fig.suptitle(text, x=0.02, ha="left", fontweight="bold", fontsize=11)
 
 
 # ---------------------------------------------------------------- figures
 
-def fig_dataset_overview(meta, counts):
+def fig_dataset_overview(meta: pd.DataFrame, counts: pd.DataFrame) -> None:
     """Fig 1: clips and recording sessions per species."""
     counts = counts[::-1]
     fig, axs = plt.subplots(1, 2, figsize=(8, 3.6), sharey=True)
@@ -108,7 +108,7 @@ def fig_dataset_overview(meta, counts):
     save("paper_01_dataset_overview")
 
 
-def typical_clip(meta, mel, species):
+def typical_clip(meta: pd.DataFrame, mel: np.ndarray, species: str) -> int | None:
     """Index of the clip with median energy among clips of at least 1.5 s (if any)."""
     idx = np.where(meta["species"].values == species)[0]
     if len(idx) == 0:
@@ -119,7 +119,7 @@ def typical_clip(meta, mel, species):
     return idx[np.argsort(energy)[len(idx) // 2]]
 
 
-def fig_example_spectrograms(meta, mel):
+def fig_example_spectrograms(meta: pd.DataFrame, mel: np.ndarray) -> None:
     """Fig 2: one typical log mel spectrogram per species."""
     fig, axs = plt.subplots(3, 3, figsize=(8, 6), sharex=True, sharey=True)
     for ax, species in zip(axs.ravel(), ORDER):
@@ -145,7 +145,7 @@ def fig_example_spectrograms(meta, mel):
     save("paper_02_example_spectrograms")
 
 
-def fig_leakage(summary):
+def fig_leakage(summary: pd.DataFrame) -> None:
     """Fig 3: random forest scores with grouped versus random splits."""
     rf = summary[summary["model"] == "random forest"]
     splits = [("5 fold, random", GREY, "Random split (clips from one tape on both sides)"),
@@ -176,7 +176,7 @@ def fig_leakage(summary):
     save("paper_03_leakage_grouped_vs_random")
 
 
-def fig_model_comparison(summary):
+def fig_model_comparison(summary: pd.DataFrame) -> None:
     """Fig 4: baseline, random forest and transformer, grouped CV only."""
     models = [("majority class baseline", GREY, "Majority class baseline"),
               ("random forest", C1, "Random forest, 90 acoustic features"),
@@ -216,18 +216,19 @@ def fig_model_comparison(summary):
     save("paper_04_model_comparison")
 
 
-def out_of_fold_predictions(features, y, groups, grouped):
+def out_of_fold_predictions(features: pd.DataFrame, y: np.ndarray, groups: np.ndarray,
+                            grouped: bool) -> np.ndarray:
     """Random forest predictions for every clip from the fold where it was held out."""
     y = np.asarray(y)
     predictions = np.empty(len(y), dtype=object)
     for train, test in make_folds(features, y, groups, grouped):
-        clf = RandomForestClassifier(n_estimators=400, class_weight="balanced", n_jobs=2, random_state=SEED)
+        clf = RandomForestClassifier(n_estimators=RF_TREES, class_weight="balanced", n_jobs=2, random_state=SEED)
         clf.fit(features.iloc[train], y[train])
         predictions[test] = clf.predict(features.iloc[test])
     return predictions
 
 
-def fig_per_species_f1(f1_grouped, f1_random, sessions):
+def fig_per_species_f1(f1_grouped: np.ndarray, f1_random: np.ndarray, sessions: pd.Series) -> None:
     """Fig 5: per species F1 for grouped and random splits (dumbbell plot)."""
     fig, ax = plt.subplots(figsize=(7, 4))
     rows = np.arange(9)[::-1]
@@ -249,7 +250,7 @@ def fig_per_species_f1(f1_grouped, f1_random, sessions):
     save("paper_05_per_species_f1")
 
 
-def fig_confusion(y, predictions):
+def fig_confusion(y: np.ndarray, predictions: np.ndarray) -> None:
     """Fig 6: normalised confusion matrix, species random forest, grouped CV."""
     cm = confusion_matrix(y, predictions, labels=ORDER)
     row_share = cm / cm.sum(1, keepdims=True)
@@ -279,14 +280,14 @@ def fig_confusion(y, predictions):
     save("paper_06_confusion_species_rf")
 
 
-def feature_family(name):
+def feature_family(name: str) -> str | None:
     for prefix, family in FEATURE_FAMILIES:
         if name.startswith(prefix):
             return family
     return None
 
 
-def fig_feature_importance():
+def fig_feature_importance() -> None:
     """Fig 7: top 15 random forest features, labelled by feature family."""
     importance = pd.read_csv(f"{OUT_DIR}/05_species_rf_feature_importance.csv", index_col=0).iloc[:, 0]
     top = importance.sort_values(ascending=False).head(15)[::-1]
@@ -302,7 +303,7 @@ def fig_feature_importance():
     save("paper_07_feature_importance")
 
 
-def fig_pca(features, meta):
+def fig_pca(features: pd.DataFrame, meta: pd.DataFrame) -> None:
     """Fig 8: first two principal components of the acoustic features, by group."""
     pca = PCA(n_components=2, random_state=SEED).fit(StandardScaler().fit_transform(features))
     explained = pca.explained_variance_ratio_
@@ -322,7 +323,7 @@ def fig_pca(features, meta):
 
 # ---------------------------------------------------------------- main
 
-def main(feat_dir="feat"):
+def main(feat_dir: str = "feat") -> None:
     set_style()
     features, mel, meta = load_features(feat_dir)
     summary = pd.read_csv(f"{OUT_DIR}/model_summary.csv")
@@ -353,4 +354,6 @@ def main(feat_dir="feat"):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "feat")
+    parser = argparse.ArgumentParser(description="Publication figures for the Watkins study.")
+    parser.add_argument("feat_dir", nargs="?", default="feat", help="folder with feat/<species>.npz")
+    main(parser.parse_args().feat_dir)

@@ -1,8 +1,11 @@
-pandas
-numpy
-scipy
-scikit-learn
-librosa
-soundfile
-matplotlib
-torch
+# Tested with these versions (Python 3.13)
+numpy==2.5.3
+pandas==3.0.5
+scipy==1.18.1
+scikit-learn==1.9.1
+librosa==1.0.0
+soundfile==0.14.0
+matplotlib==3.11.2
+torch==2.15.0
+# only for the tests in tests/
+pytest==9.1.1

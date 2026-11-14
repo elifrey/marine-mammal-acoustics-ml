@@ -9,6 +9,8 @@ so the full zip is never downloaded (about 710 MB in total).
 Already downloaded clips are skipped, so the script can be rerun after an
 interruption.
 """
+from __future__ import annotations
+
 import os
 import sys
 import time
@@ -25,11 +27,11 @@ OUT_DIR = "data_raw"
 RETRIES = 3
 
 
-def destination(row):
+def destination(row: pd.Series) -> str:
     return os.path.join(OUT_DIR, row.species, str(row.year), row.filename)
 
 
-def download(row):
+def download(row: pd.Series) -> bool:
     """Fetch one clip into a .part file and rename it only when complete."""
     dest = destination(row)
     os.makedirs(os.path.dirname(dest), exist_ok=True)
@@ -46,7 +48,7 @@ def download(row):
     return False
 
 
-def main():
+def main() -> None:
     manifest = pd.read_csv("data_raw_manifest.csv")
     todo = [row for _, row in manifest.iterrows() if not os.path.exists(destination(row))]
     print(f"{len(manifest)} clips in manifest, {len(todo)} to download")

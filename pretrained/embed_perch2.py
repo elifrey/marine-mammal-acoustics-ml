@@ -4,6 +4,8 @@ Needs: pip install "tensorflow-cpu~=2.20.0" soundfile librosa, and the perch_v2_
 https://www.kaggle.com/models/google/bird-vocalization-classifier (TensorFlow2, perch_v2_cpu, v1) unpacked to PERCH_DIR.
 Output: feat/perch2_embeddings.npz with names = "<Species>/<year>/<file>.wav".
 """
+from __future__ import annotations
+
 import glob
 import os
 
@@ -21,7 +23,7 @@ MAX_WINDOWS = 6
 BATCH = 4
 
 
-def load_windows(path):
+def load_windows(path: str) -> list[np.ndarray]:
     """Mono audio at 32 kHz (first 30 s only) cut into up to six zero padded 5 s windows."""
     y, sr = sf.read(path, dtype="float32", always_2d=True)
     y = y.mean(1)[:int(sr * MAX_WINDOWS * 5)]
@@ -38,21 +40,21 @@ class BatchedEmbedder:
     silent windows whose outputs are discarded.
     """
 
-    def __init__(self, model, batch_size=BATCH):
+    def __init__(self, model, batch_size: int = BATCH):
         self.model, self.batch_size = model, batch_size
         self.queue, self.owner, self.embeddings = [], [], {}
 
-    def add(self, clip_index, windows):
+    def add(self, clip_index: int, windows: list[np.ndarray]) -> None:
         self.embeddings[clip_index] = []
         for window in windows:
             self.queue.append(window)
             self.owner.append(clip_index)
         self._run()
 
-    def finish(self):
+    def finish(self) -> None:
         self._run(force=True)
 
-    def _run(self, force=False):
+    def _run(self, force: bool = False) -> None:
         while len(self.queue) >= self.batch_size or (force and self.queue):
             batch, owners = self.queue[:self.batch_size], self.owner[:self.batch_size]
             self.queue, self.owner = self.queue[self.batch_size:], self.owner[self.batch_size:]
@@ -61,11 +63,11 @@ class BatchedEmbedder:
             for output, clip_index in zip(outputs, owners):
                 self.embeddings[clip_index].append(output)
 
-    def mean_embeddings(self, n_clips):
+    def mean_embeddings(self, n_clips: int) -> np.ndarray:
         return np.array([np.mean(self.embeddings[i], 0) for i in range(n_clips)], np.float32)
 
 
-def main():
+def main() -> None:
     model = tf.saved_model.load(PERCH_DIR).signatures["serving_default"]
     embedder = BatchedEmbedder(model)
     names, n_windows = [], []

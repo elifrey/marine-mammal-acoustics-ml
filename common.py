@@ -3,6 +3,8 @@
 Keeping the feature loading and the cross validation folds in one place
 guarantees that every script sees the same clips, labels and folds.
 """
+from __future__ import annotations
+
 import glob
 import os
 
@@ -12,6 +14,8 @@ from sklearn.model_selection import StratifiedGroupKFold, StratifiedKFold
 
 SEED = 0
 N_FOLDS = 5
+RF_TREES = 400
+FIG_DIR, OUT_DIR = "figures", "outputs"
 
 SPECIES_GROUP = {
     "HumpbackWhale": "Mysticete",
@@ -40,7 +44,7 @@ FEATURE_COLUMNS = (
 META_COLUMNS = ["species", "year", "filename", "durationSeconds", "originalSr"]
 
 
-def load_features(feat_dir):
+def load_features(feat_dir: str) -> tuple[pd.DataFrame, np.ndarray, pd.DataFrame]:
     """Load every feat/<species>.npz file written by extract_features.py.
 
     Returns
@@ -72,7 +76,8 @@ def load_features(feat_dir):
     return features, mel[keep], meta
 
 
-def make_folds(features, labels, groups, grouped=True, n_splits=N_FOLDS):
+def make_folds(features, labels: np.ndarray, groups: np.ndarray, grouped: bool = True,
+               n_splits: int = N_FOLDS) -> list[tuple[np.ndarray, np.ndarray]]:
     """Stratified 5 fold splits, grouped by recording session or random.
 
     With grouped=True no recording session contributes clips to both the

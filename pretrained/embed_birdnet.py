@@ -3,6 +3,8 @@
 Needs: pip install birdnetlib ai-edge-litert soundfile librosa  (the model file ships inside birdnetlib).
 Output: feat/birdnet_embeddings.npz with names = "<Species>/<year>/<file>.wav".
 """
+from __future__ import annotations
+
 import glob
 import os
 
@@ -19,7 +21,7 @@ WINDOW = 3 * SR
 MAX_WINDOWS = 10
 
 
-def load_windows(path):
+def load_windows(path: str) -> list[np.ndarray]:
     """Mono audio at 48 kHz cut into up to ten zero padded 3 s windows."""
     y, sr = sf.read(path, dtype="float32", always_2d=True)
     y = y.mean(1)
@@ -32,20 +34,20 @@ def load_windows(path):
 class BirdNetEmbedder:
     """Wraps the BirdNET TFLite model and reads the layer before the classifier."""
 
-    def __init__(self, model_path=MODEL):
+    def __init__(self, model_path: str = MODEL):
         self.interpreter = Interpreter(model_path=model_path, num_threads=os.cpu_count(),
                                        experimental_preserve_all_tensors=True)
         self.interpreter.allocate_tensors()
         self.input_index = self.interpreter.get_input_details()[0]["index"]
         self.embedding_index = self.interpreter.get_output_details()[0]["index"] - 1
 
-    def __call__(self, window):
+    def __call__(self, window: np.ndarray) -> np.ndarray:
         self.interpreter.set_tensor(self.input_index, window[None, :].astype(np.float32))
         self.interpreter.invoke()
         return self.interpreter.get_tensor(self.embedding_index)[0].copy()
 
 
-def main():
+def main() -> None:
     embed = BirdNetEmbedder()
     names, embeddings, n_windows = [], [], []
     for path in sorted(glob.glob("data_raw/*/*/*.wav")):

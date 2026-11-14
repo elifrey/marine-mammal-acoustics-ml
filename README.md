@@ -148,8 +148,9 @@ points, so leakage is not a problem of weak models only.
 pip install -r requirements.txt
 python download_clips.py          # ~710 MB, data_raw/<species>/<year>/<file>.wav
 python extract_features.py        # feat/<species>.npz
-EPOCHS=25 python analysis.py      # outputs/ and figures/, about 75 min on 2 CPU cores
+python analysis.py --epochs 25    # outputs/ and figures/, about 75 min on 2 CPU cores
 python make_figures.py            # figures/paper_*.png
+pytest                            # quick checks of folds, features and model shapes
 ```
 
 Pretrained embeddings (v1.2.0):
@@ -175,6 +176,7 @@ extract_features.py      resampling, 90 acoustic features, log mel spectrograms
 analysis.py              clustering, random forests, baselines, transformer, grouped and random CV
 make_figures.py          publication figures and per species scores
 common.py                shared constants, feature loading and cross validation folds
+tests/                   pytest checks, including that grouped folds never share a recording session
 pretrained/               BirdNET and Perch 2.0 embeddings and their evaluation
 figures/  outputs/       all generated figures and result tables
 LICENSE                  MIT, for the code
@@ -198,11 +200,13 @@ with the same grouped and random folds as the other models
 
 ## Changes since v1.2.0
 
-v1.2.1 reorganises the code without changing any result: every script now
-runs through a `main()` function, shared loading and fold logic lives in
-`common.py`, and functions take their data as arguments instead of using
-global variables. Rerunning the old and new code on the same input gives
-byte identical outputs and figures.
+v1.2.1 reorganises the code without changing any result. Every script runs
+through a `main()` function with command line options (`--epochs`,
+`--skip-species-transformer`), shared constants, feature loading and folds
+live in `common.py`, functions take their data as arguments and carry type
+hints, package versions are pinned in `requirements.txt`, and `tests/` checks
+that grouped folds never share a recording session. Rerunning the old and new
+code on the same input gives byte identical outputs and figures.
 
 ## How to cite
 
