@@ -2,6 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22859088.svg)](https://doi.org/10.5281/zenodo.22859088)
 
+**Preprint:** Frey, E. (2026). Recording session leakage inflates accuracy in marine mammal call classification. EcoEvoRxiv. [doi.org/10.32942/X2P68X](https://doi.org/10.32942/X2P68X)
+
 **Write up:** [Can AI tell a narwhal from a bowhead whale by sound alone?](https://simplyecologist.com/ai-marine-mammal-call-classification/), a plain language walkthrough of the method and the results.
 
 This project classifies nine Arctic and subarctic marine mammal species, and
@@ -194,6 +196,12 @@ with the same grouped and random folds as the other models
 (`outputs/pretrained_summary.csv`).
 
 ## How to cite
+
+To cite the study, please use the preprint:
+
+> Frey, E. (2026). Recording session leakage inflates accuracy in marine mammal call classification. EcoEvoRxiv. https://doi.org/10.32942/X2P68X
+
+To cite the code and data:
 
 > Frey, E. (2026). Marine mammal call classification with random forest and transformer models on 4,761 Watkins recordings (v1.2.0). Zenodo. https://doi.org/10.5281/zenodo.22859088
 
