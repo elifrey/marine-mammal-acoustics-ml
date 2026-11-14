@@ -4,39 +4,84 @@ Needs: pip install "tensorflow-cpu~=2.20.0" soundfile librosa, and the perch_v2_
 https://www.kaggle.com/models/google/bird-vocalization-classifier (TensorFlow2, perch_v2_cpu, v1) unpacked to PERCH_DIR.
 Output: feat/perch2_embeddings.npz with names = "<Species>/<year>/<file>.wav".
 """
-import glob, os, numpy as np, soundfile as sf, librosa
-os.environ.setdefault('TF_CPP_MIN_LOG_LEVEL', '3')
-import tensorflow as tf
+from __future__ import annotations
 
-PERCH_DIR = os.environ.get('PERCH_DIR', 'perch_v2_cpu')
-f = tf.saved_model.load(PERCH_DIR).signatures['serving_default']
-SR, W, MAXW, B = 32000, 5 * 32000, 6, 4
+import glob
+import os
 
-names, nwin, acc, queue, owner = [], [], {}, [], []
-def run(force=False):
-    global queue, owner
-    while len(queue) >= B or (force and queue):
-        q, o = queue[:B], owner[:B]; queue, owner = queue[B:], owner[B:]
-        x = np.stack(q + [np.zeros(W, np.float32)] * (B - len(q)))
-        e = f(inputs=x)['embedding'].numpy()[:len(q)]
-        for k, i in enumerate(o):
-            acc[i].append(e[k])
+import librosa
+import numpy as np
+import soundfile as sf
 
-for path in sorted(glob.glob('data_raw/*/*/*.wav')):
-    y, sr = sf.read(path, dtype='float32', always_2d=True)
-    y = y.mean(1)[:int(sr * MAXW * 5)]          # only the first 30 s are used
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
+import tensorflow as tf  # noqa: E402  (log level must be set first)
+
+PERCH_DIR = os.environ.get("PERCH_DIR", "perch_v2_cpu")
+SR = 32000
+WINDOW = 5 * SR
+MAX_WINDOWS = 6
+BATCH = 4
+
+
+def load_windows(path: str) -> list[np.ndarray]:
+    """Mono audio at 32 kHz (first 30 s only) cut into up to six zero padded 5 s windows."""
+    y, sr = sf.read(path, dtype="float32", always_2d=True)
+    y = y.mean(1)[:int(sr * MAX_WINDOWS * 5)]
     if sr != SR:
-        y = librosa.resample(y, orig_sr=sr, target_sr=SR, res_type='soxr_hq')
-    windows = [y[i:i + W] for i in range(0, max(len(y), 1), W)][:MAXW]
-    idx = len(names); names.append(os.path.relpath(path, 'data_raw').replace(os.sep, '/'))
-    nwin.append(len(windows)); acc[idx] = []
-    for c in windows:
-        if len(c) < W:
-            c = np.pad(c, (0, W - len(c)))
-        queue.append(c.astype(np.float32)); owner.append(idx)
-    run()
-run(force=True)
-E = np.array([np.mean(acc[i], 0) for i in range(len(names))], np.float32)
-os.makedirs('feat', exist_ok=True)
-np.savez_compressed('feat/perch2_embeddings.npz', names=np.array(names), emb=E, nwin=np.array(nwin))
-print(len(names), 'clips embedded')
+        y = librosa.resample(y, orig_sr=sr, target_sr=SR, res_type="soxr_hq")
+    windows = [y[i:i + WINDOW] for i in range(0, max(len(y), 1), WINDOW)][:MAX_WINDOWS]
+    return [(np.pad(w, (0, WINDOW - len(w))) if len(w) < WINDOW else w).astype(np.float32) for w in windows]
+
+
+class BatchedEmbedder:
+    """Queues windows from many clips and runs the model in fixed size batches.
+
+    The SavedModel expects a fixed batch size, so the last batch is padded with
+    silent windows whose outputs are discarded.
+    """
+
+    def __init__(self, model, batch_size: int = BATCH):
+        self.model, self.batch_size = model, batch_size
+        self.queue, self.owner, self.embeddings = [], [], {}
+
+    def add(self, clip_index: int, windows: list[np.ndarray]) -> None:
+        self.embeddings[clip_index] = []
+        for window in windows:
+            self.queue.append(window)
+            self.owner.append(clip_index)
+        self._run()
+
+    def finish(self) -> None:
+        self._run(force=True)
+
+    def _run(self, force: bool = False) -> None:
+        while len(self.queue) >= self.batch_size or (force and self.queue):
+            batch, owners = self.queue[:self.batch_size], self.owner[:self.batch_size]
+            self.queue, self.owner = self.queue[self.batch_size:], self.owner[self.batch_size:]
+            padding = [np.zeros(WINDOW, np.float32)] * (self.batch_size - len(batch))
+            outputs = self.model(inputs=np.stack(batch + padding))["embedding"].numpy()[:len(batch)]
+            for output, clip_index in zip(outputs, owners):
+                self.embeddings[clip_index].append(output)
+
+    def mean_embeddings(self, n_clips: int) -> np.ndarray:
+        return np.array([np.mean(self.embeddings[i], 0) for i in range(n_clips)], np.float32)
+
+
+def main() -> None:
+    model = tf.saved_model.load(PERCH_DIR).signatures["serving_default"]
+    embedder = BatchedEmbedder(model)
+    names, n_windows = [], []
+    for path in sorted(glob.glob("data_raw/*/*/*.wav")):
+        windows = load_windows(path)
+        embedder.add(len(names), windows)
+        names.append(os.path.relpath(path, "data_raw").replace(os.sep, "/"))
+        n_windows.append(len(windows))
+    embedder.finish()
+    os.makedirs("feat", exist_ok=True)
+    np.savez_compressed("feat/perch2_embeddings.npz", names=np.array(names),
+                        emb=embedder.mean_embeddings(len(names)), nwin=np.array(n_windows))
+    print(len(names), "clips embedded")
+
+
+if __name__ == "__main__":
+    main()
