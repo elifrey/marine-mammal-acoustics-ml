@@ -9,28 +9,53 @@ so the full zip is never downloaded (about 710 MB in total).
 Already downloaded clips are skipped, so the script can be rerun after an
 interruption.
 """
-import os, sys, time, urllib.parse, urllib.request
+import os
+import sys
+import time
+import urllib.parse
+import urllib.request
+
 import pandas as pd
 
 # archive.org redirects this to whichever storage server currently holds the item
 ZIP_URL = ("https://archive.org/download/watkins-marine-mammal-sound-database-full-cuts/"
            "Watkins_Marine_Mammal_Sound_Database_full_cuts.zip/")
 INNER = "Watkins_Marine_Mammal_Sound_Database"
-OUT = "data_raw"
+OUT_DIR = "data_raw"
+RETRIES = 3
 
-manifest = pd.read_csv("data_raw_manifest.csv")
-todo = [r for _, r in manifest.iterrows()
-        if not os.path.exists(os.path.join(OUT, r.species, str(r.year), r.filename))]
-print(f"{len(manifest)} clips in manifest, {len(todo)} to download")
-for i, r in enumerate(todo, 1):
-    dest = os.path.join(OUT, r.species, str(r.year), r.filename)
+
+def destination(row):
+    return os.path.join(OUT_DIR, row.species, str(row.year), row.filename)
+
+
+def download(row):
+    """Fetch one clip into a .part file and rename it only when complete."""
+    dest = destination(row)
     os.makedirs(os.path.dirname(dest), exist_ok=True)
-    url = ZIP_URL + urllib.parse.quote(f"{INNER}/{r.species}/{r.year}/{r.filename}")
-    for attempt in range(3):
+    url = ZIP_URL + urllib.parse.quote(f"{INNER}/{row.species}/{row.year}/{row.filename}")
+    for attempt in range(RETRIES):
         try:
-            urllib.request.urlretrieve(url, dest + ".part"); os.replace(dest + ".part", dest); break
-        except Exception as e:
-            if attempt == 2: print("failed:", dest, e, file=sys.stderr)
+            urllib.request.urlretrieve(url, dest + ".part")
+            os.replace(dest + ".part", dest)
+            return True
+        except Exception as e:  # network errors: back off and retry
+            if attempt == RETRIES - 1:
+                print("failed:", dest, e, file=sys.stderr)
             time.sleep(2 * (attempt + 1))
-    if i % 250 == 0: print(f"  {i}/{len(todo)}", flush=True)
-print("done")
+    return False
+
+
+def main():
+    manifest = pd.read_csv("data_raw_manifest.csv")
+    todo = [row for _, row in manifest.iterrows() if not os.path.exists(destination(row))]
+    print(f"{len(manifest)} clips in manifest, {len(todo)} to download")
+    for i, row in enumerate(todo, 1):
+        download(row)
+        if i % 250 == 0:
+            print(f"  {i}/{len(todo)}", flush=True)
+    print("done")
+
+
+if __name__ == "__main__":
+    main()

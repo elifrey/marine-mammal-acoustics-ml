@@ -174,6 +174,7 @@ download_clips.py        fetches the clips from the Internet Archive mirror
 extract_features.py      resampling, 90 acoustic features, log mel spectrograms
 analysis.py              clustering, random forests, baselines, transformer, grouped and random CV
 make_figures.py          publication figures and per species scores
+common.py                shared constants, feature loading and cross validation folds
 pretrained/               BirdNET and Perch 2.0 embeddings and their evaluation
 figures/  outputs/       all generated figures and result tables
 LICENSE                  MIT, for the code
@@ -194,6 +195,14 @@ v1.2.0 adds two pretrained bioacoustic models, BirdNET v2.4 and Perch 2.0.
 Their embeddings are classified with a logistic regression and evaluated
 with the same grouped and random folds as the other models
 (`outputs/pretrained_summary.csv`).
+
+## Changes since v1.2.0
+
+v1.2.1 reorganises the code without changing any result: every script now
+runs through a `main()` function, shared loading and fold logic lives in
+`common.py`, and functions take their data as arguments instead of using
+global variables. Rerunning the old and new code on the same input gives
+byte identical outputs and figures.
 
 ## How to cite
 

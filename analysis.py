@@ -1,5 +1,5 @@
 """
-Marine mammal call classification on 4,761 Watkins recordings (v1.1.0).
+Marine mammal call classification on 4,761 Watkins recordings.
 
 Inputs: feat/*.npz written by extract_features.py (90 classical acoustic
 features plus a 64 x 128 log mel spectrogram per clip).
@@ -17,201 +17,328 @@ Runs, in order:
 
 Writes figures/ and outputs/ (model_summary.csv holds every score).
 """
-import glob, json, os, sys, time
-import numpy as np, pandas as pd
+import json
+import os
+import sys
+import time
+
 import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
+import numpy as np
+import pandas as pd
+import torch
 from sklearn.cluster import KMeans
-from sklearn.metrics import (silhouette_score, adjusted_rand_score, accuracy_score,
-                             balanced_accuracy_score, f1_score, confusion_matrix,
-                             classification_report)
-from sklearn.model_selection import StratifiedGroupKFold, StratifiedKFold
+from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
-import torch, torch.nn as nn
-from torch.utils.data import TensorDataset, DataLoader
+from sklearn.metrics import (accuracy_score, adjusted_rand_score, balanced_accuracy_score,
+                             classification_report, confusion_matrix, f1_score, silhouette_score)
+from sklearn.preprocessing import StandardScaler
+from torch import nn
+from torch.utils.data import DataLoader, TensorDataset
 
-np.random.seed(0); torch.manual_seed(0); torch.set_num_threads(2)
-FEAT_DIR = sys.argv[1] if len(sys.argv) > 1 else "feat"
-FIG, OUT = "figures", "outputs"
-os.makedirs(FIG, exist_ok=True); os.makedirs(OUT, exist_ok=True)
+from common import SEED, load_features, make_folds
 
-SPECIES_GROUP = {
-    "HumpbackWhale": "Mysticete", "BowheadWhale": "Mysticete", "NorthernRightWhale": "Mysticete",
-    "KillerWhale": "Odontocete", "Narwhal": "Odontocete", "Beluga_WhiteWhale": "Odontocete",
-    "BeardedSeal": "Pinniped", "RingedSeal": "Pinniped", "Walrus": "Pinniped",
-}
-COLS = ([f"mfccMean{i}" for i in range(20)] + [f"mfccStd{i}" for i in range(20)] +
-        [f"deltaMfccMean{i}" for i in range(20)] + [f"deltaMfccStd{i}" for i in range(20)] +
-        [f"{n}{s}" for n in ["centroid", "bandwidth", "rolloff", "zcr", "rms"] for s in ["Mean", "Std"]])
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402  (backend must be set first)
 
-# ---------------------------------------------------------------- load
-Xs, Ms, metas = [], [], []
-for f in sorted(glob.glob(os.path.join(FEAT_DIR, "*.npz"))):
-    d = np.load(f, allow_pickle=True)
-    Xs.append(d["X"]); Ms.append(d["mel"]); metas.append(pd.DataFrame(d["meta"].tolist(),
-        columns=["species", "year", "filename", "durationSeconds", "originalSr"]))
-X = pd.DataFrame(np.vstack(Xs), columns=COLS)
-mel = np.concatenate(Ms).astype(np.float32) / 255 * 8 - 4
-meta = pd.concat(metas, ignore_index=True)
-meta["group"] = meta["species"].map(SPECIES_GROUP)
-# Watkins file names start with a two digit year and three digit tape number;
-# clips sharing those five characters come from the same recording tape.
-meta["session"] = meta["species"] + "_" + meta["filename"].str[:5]
-keep = np.isfinite(X.values).all(axis=1)
-X, mel, meta = X[keep].reset_index(drop=True), mel[keep], meta[keep].reset_index(drop=True)
-print(f"{len(meta)} clips, {meta['species'].nunique()} species, {meta['session'].nunique()} recording sessions")
-meta.to_csv(f"{OUT}/clip_metadata.csv", index=False)
-counts = meta.groupby("species").agg(clips=("filename", "size"), sessions=("session", "nunique"))
-counts.to_csv(f"{OUT}/clips_per_species.csv")
-print(counts)
+FIG_DIR, OUT_DIR = "figures", "outputs"
+RF_TREES = 400
 
-species_order = sorted(meta["species"].unique())
-group_order = sorted(meta["group"].unique())
-groups = meta["session"].values
 
-def splitter(y, grouped=True, n=5):
-    if grouped:
-        return list(StratifiedGroupKFold(n_splits=n, shuffle=True, random_state=0).split(X, y, groups))
-    return list(StratifiedKFold(n_splits=n, shuffle=True, random_state=0).split(X, y))
+# ---------------------------------------------------------------- helpers
 
-def plot_cm(cm, labels, title, path, cmap="Blues"):
-    cmn = cm / cm.sum(axis=1, keepdims=True)
-    plt.figure(figsize=(7, 6)); plt.imshow(cmn, cmap=cmap, vmin=0, vmax=1); plt.colorbar(label="Row proportion")
+def mel_to_float(mel_uint8):
+    """Undo the uint8 storage of extract_features.mel(): back to z scores in [-4, 4]."""
+    return mel_uint8.astype(np.float32) / 255 * 8 - 4
+
+
+def summarise_scores(task, model, cv, accs, baccs, f1s):
+    """One row of outputs/model_summary.csv."""
+    return dict(task=task, model=model, cv=cv,
+                accuracy=np.mean(accs), accuracySd=np.std(accs),
+                balancedAccuracy=np.mean(baccs), balancedAccuracySd=np.std(baccs),
+                macroF1=np.mean(f1s))
+
+
+def plot_confusion(cm, labels, title, path, cmap="Blues"):
+    """Confusion matrix coloured by row proportion, annotated with counts."""
+    row_share = cm / cm.sum(axis=1, keepdims=True)
+    plt.figure(figsize=(7, 6))
+    plt.imshow(row_share, cmap=cmap, vmin=0, vmax=1)
+    plt.colorbar(label="Row proportion")
     plt.xticks(range(len(labels)), labels, rotation=45, ha="right", fontsize=8)
     plt.yticks(range(len(labels)), labels, fontsize=8)
     for i in range(len(labels)):
         for j in range(len(labels)):
             plt.text(j, i, cm[i, j], ha="center", va="center", fontsize=7,
-                     color="white" if cmn[i, j] > 0.5 else "black")
-    plt.xlabel("Predicted"); plt.ylabel("True"); plt.title(title, fontsize=10)
-    plt.tight_layout(); plt.savefig(path, dpi=150); plt.close()
+                     color="white" if row_share[i, j] > 0.5 else "black")
+    plt.xlabel("Predicted")
+    plt.ylabel("True")
+    plt.title(title, fontsize=10)
+    plt.tight_layout()
+    plt.savefig(path, dpi=150)
+    plt.close()
 
-results = []
 
-# ---------------------------------------------------------------- unsupervised
-Xsd = StandardScaler().fit_transform(X)
-Xp = PCA(n_components=10, random_state=0).fit_transform(Xsd)
-sil = {}
-for k in range(2, 13):
-    lab = KMeans(n_clusters=k, n_init=10, random_state=0).fit_predict(Xp)
-    if np.bincount(lab).min() >= 10:
-        sil[k] = silhouette_score(Xp, lab, sample_size=3000, random_state=0)
-best_k = max(sil, key=sil.get)
-clusters = KMeans(n_clusters=best_k, n_init=10, random_state=0).fit_predict(Xp)
-ari_sp = adjusted_rand_score(meta["species"], clusters); ari_gr = adjusted_rand_score(meta["group"], clusters)
-print(f"KMeans k={best_k}: ARI species {ari_sp:.3f}, group {ari_gr:.3f}")
-plt.figure(figsize=(6, 4)); plt.plot(list(sil), list(sil.values()), marker="o"); plt.axvline(best_k, ls="--", c="grey")
-plt.xlabel("k"); plt.ylabel("Silhouette"); plt.title("Silhouette by number of clusters"); plt.tight_layout()
-plt.savefig(f"{FIG}/01_silhouette_by_k.png", dpi=150); plt.close()
-plt.figure(figsize=(7, 5))
-for g in group_order:
-    i = meta["group"].values == g; plt.scatter(Xp[i, 0], Xp[i, 1], s=6, alpha=0.5, label=g)
-plt.legend(); plt.xlabel("PC1"); plt.ylabel("PC2"); plt.title("PCA of acoustic features by taxonomic group")
-plt.tight_layout(); plt.savefig(f"{FIG}/03_pca_by_group.png", dpi=150); plt.close()
+# ---------------------------------------------------------------- 1. unsupervised check
 
-# ---------------------------------------------------------------- random forest
-def rf_cv(y, labels, name, prefix, grouped=True):
-    y = np.asarray(y); folds = splitter(y, grouped)
-    accs, baccs, f1s, cm = [], [], [], np.zeros((len(labels), len(labels)), int)
-    imp = np.zeros(X.shape[1]); preds = np.empty(len(y), dtype=object)
-    for tr, te in folds:
-        clf = RandomForestClassifier(n_estimators=400, class_weight="balanced", n_jobs=2, random_state=0)
-        clf.fit(X.iloc[tr], y[tr]); p = clf.predict(X.iloc[te]); preds[te] = p
-        accs.append(accuracy_score(y[te], p)); baccs.append(balanced_accuracy_score(y[te], p))
-        f1s.append(f1_score(y[te], p, average="macro")); cm += confusion_matrix(y[te], p, labels=labels)
-        imp += clf.feature_importances_ / len(folds)
-    tag = "grouped" if grouped else "random"
-    if grouped:
-        plot_cm(cm, labels, f"{name}: random forest, 5 fold CV grouped by recording session", f"{FIG}/{prefix}_rf_confusion.png")
-        with open(f"{OUT}/{prefix}_rf_report.txt", "w") as fh:
-            fh.write(classification_report(y, preds, labels=labels))
-        fi = pd.Series(imp, index=X.columns).sort_values(ascending=False); fi.to_csv(f"{OUT}/{prefix}_rf_feature_importance.csv")
-        plt.figure(figsize=(6, 6)); fi.head(15)[::-1].plot(kind="barh"); plt.title(f"{name}: top 15 features")
-        plt.tight_layout(); plt.savefig(f"{FIG}/{prefix}_rf_feature_importance.png", dpi=150); plt.close()
-    r = dict(task=name, model="random forest", cv=f"5 fold, {tag}", accuracy=np.mean(accs), accuracySd=np.std(accs),
-             balancedAccuracy=np.mean(baccs), balancedAccuracySd=np.std(baccs), macroF1=np.mean(f1s))
-    print(r); results.append(r); return r
+def unsupervised_check(features, meta, group_order):
+    """PCA to 10 components, KMeans with k chosen by silhouette, ARI against labels."""
+    projected = PCA(n_components=10, random_state=SEED).fit_transform(
+        StandardScaler().fit_transform(features))
 
-t0 = time.time()
-rf_cv(meta["species"], species_order, "Species (9 way)", "05_species", grouped=True)
-rf_cv(meta["species"], species_order, "Species (9 way)", "05_species", grouped=False)
-rf_cv(meta["group"], group_order, "Taxonomic group (3 way)", "06_group", grouped=True)
-rf_cv(meta["group"], group_order, "Taxonomic group (3 way)", "06_group", grouped=False)
-print(f"RF done in {time.time()-t0:.0f}s", flush=True)
+    silhouette = {}
+    for k in range(2, 13):
+        clusters = KMeans(n_clusters=k, n_init=10, random_state=SEED).fit_predict(projected)
+        if np.bincount(clusters).min() >= 10:  # skip solutions with tiny clusters
+            silhouette[k] = silhouette_score(projected, clusters, sample_size=3000, random_state=SEED)
+    best_k = max(silhouette, key=silhouette.get)
+    clusters = KMeans(n_clusters=best_k, n_init=10, random_state=SEED).fit_predict(projected)
+    ari_species = adjusted_rand_score(meta["species"], clusters)
+    ari_group = adjusted_rand_score(meta["group"], clusters)
+    print(f"KMeans k={best_k}: ARI species {ari_species:.3f}, group {ari_group:.3f}")
 
-for task, y in [("Species (9 way)", meta["species"]), ("Taxonomic group (3 way)", meta["group"])]:
-    vc = y.value_counts(normalize=True)
-    results.append(dict(task=task, model="majority class baseline", cv="", accuracy=vc.max(), accuracySd=0,
-                        balancedAccuracy=1 / len(vc), balancedAccuracySd=0, macroF1=np.nan))
-
-# ---------------------------------------------------------------- transformer
-class SpectrogramTransformer(nn.Module):
-    def __init__(self, n_mels=64, n_frames=128, pf=8, pt=8, d=64, heads=4, layers=2, n_classes=3, drop=0.3):
-        super().__init__(); self.pf, self.pt = pf, pt; n_p = (n_mels // pf) * (n_frames // pt)
-        self.embed = nn.Linear(pf * pt, d); self.cls = nn.Parameter(torch.zeros(1, 1, d))
-        self.pos = nn.Parameter(torch.randn(1, n_p + 1, d) * 0.02)
-        layer = nn.TransformerEncoderLayer(d, heads, d * 2, drop, batch_first=True)
-        self.enc = nn.TransformerEncoder(layer, layers); self.drop = nn.Dropout(drop); self.head = nn.Linear(d, n_classes)
-    def forward(self, x):
-        b = x.shape[0]
-        x = x.unfold(1, self.pf, self.pf).unfold(2, self.pt, self.pt).contiguous().view(b, -1, self.pf * self.pt)
-        t = torch.cat([self.cls.expand(b, -1, -1), self.embed(x)], 1) + self.pos
-        return self.head(self.drop(self.enc(t)[:, 0]))
-
-def augment(xb):
-    # light SpecAugment: one frequency mask and one time mask per clip
-    xb = xb.clone()
-    for i in range(xb.shape[0]):
-        f0 = np.random.randint(0, 64 - 8); xb[i, f0:f0 + np.random.randint(0, 8)] = 0
-        t0_ = np.random.randint(0, 128 - 16); xb[i, :, t0_:t0_ + np.random.randint(0, 16)] = 0
-    return xb
-
-def transformer_cv(y, labels, name, prefix, epochs):
-    y = np.asarray(y); lab2i = {c: i for i, c in enumerate(labels)}; yi = np.array([lab2i[v] for v in y])
-    folds = splitter(y, grouped=True); accs, baccs, f1s = [], [], []
-    cm = np.zeros((len(labels), len(labels)), int); curves = []
-    for k, (tr, te) in enumerate(folds):
-        torch.manual_seed(k)
-        model = SpectrogramTransformer(n_classes=len(labels))
-        w = torch.tensor(len(tr) / (len(labels) * np.bincount(yi[tr], minlength=len(labels)).clip(1)), dtype=torch.float32)
-        crit = nn.CrossEntropyLoss(weight=w); opt = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=1e-2)
-        sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, epochs)
-        dl = DataLoader(TensorDataset(torch.tensor(mel[tr]), torch.tensor(yi[tr])), batch_size=64, shuffle=True)
-        Xte = torch.tensor(mel[te]); curve = []
-        for ep in range(epochs):
-            model.train()
-            for xb, yb in dl:
-                opt.zero_grad(); loss = crit(model(augment(xb)), yb); loss.backward(); opt.step()
-            sched.step()
-            model.eval()
-            with torch.no_grad():
-                p = torch.cat([model(Xte[i:i + 256]).argmax(1) for i in range(0, len(Xte), 256)]).numpy()
-            curve.append(balanced_accuracy_score(yi[te], p))
-        curves.append(curve)
-        accs.append(accuracy_score(yi[te], p)); baccs.append(balanced_accuracy_score(yi[te], p))
-        f1s.append(f1_score(yi[te], p, average="macro")); cm += confusion_matrix(yi[te], p, labels=range(len(labels)))
-        print(f"  {name} fold {k+1}: acc {accs[-1]:.3f}, balanced {baccs[-1]:.3f}", flush=True)
-    plot_cm(cm, labels, f"{name}: transformer, 5 fold CV grouped by recording session", f"{FIG}/{prefix}_transformer_confusion.png", "Purples")
     plt.figure(figsize=(6, 4))
-    for k, c in enumerate(curves): plt.plot(c, alpha=0.7, label=f"fold {k+1}")
-    plt.xlabel("Epoch"); plt.ylabel("Held out balanced accuracy"); plt.title(f"{name}: transformer training"); plt.legend(fontsize=7)
-    plt.tight_layout(); plt.savefig(f"{FIG}/{prefix}_transformer_curves.png", dpi=150); plt.close()
-    r = dict(task=name, model="transformer (from scratch, log mel)", cv="5 fold, grouped",
-             accuracy=np.mean(accs), accuracySd=np.std(accs), balancedAccuracy=np.mean(baccs),
-             balancedAccuracySd=np.std(baccs), macroF1=np.mean(f1s))
-    print(r, flush=True); results.append(r)
+    plt.plot(list(silhouette), list(silhouette.values()), marker="o")
+    plt.axvline(best_k, ls="--", c="grey")
+    plt.xlabel("k")
+    plt.ylabel("Silhouette")
+    plt.title("Silhouette by number of clusters")
+    plt.tight_layout()
+    plt.savefig(f"{FIG_DIR}/01_silhouette_by_k.png", dpi=150)
+    plt.close()
 
-EPOCHS = int(os.environ.get("EPOCHS", "25"))
-t0 = time.time()
-transformer_cv(meta["group"], group_order, "Taxonomic group (3 way)", "06_group", EPOCHS)
-print(f"transformer group done in {time.time()-t0:.0f}s", flush=True)
-pd.DataFrame(results).to_csv(f"{OUT}/model_summary.csv", index=False)
-if os.environ.get("SPECIES_TRANSFORMER", "1") == "1":
-    transformer_cv(meta["species"], species_order, "Species (9 way)", "05_species", EPOCHS)
-pd.DataFrame(results).to_csv(f"{OUT}/model_summary.csv", index=False)
-json.dump(dict(clips=len(meta), sessions=int(meta["session"].nunique()), kmeansK=int(best_k),
-               ariSpecies=ari_sp, ariGroup=ari_gr), open(f"{OUT}/run_info.json", "w"), indent=1)
-print("Done.")
+    plt.figure(figsize=(7, 5))
+    for group in group_order:
+        rows = meta["group"].values == group
+        plt.scatter(projected[rows, 0], projected[rows, 1], s=6, alpha=0.5, label=group)
+    plt.legend()
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
+    plt.title("PCA of acoustic features by taxonomic group")
+    plt.tight_layout()
+    plt.savefig(f"{FIG_DIR}/03_pca_by_group.png", dpi=150)
+    plt.close()
+
+    return dict(kmeansK=int(best_k), ariSpecies=ari_species, ariGroup=ari_group)
+
+
+# ---------------------------------------------------------------- 2. random forest
+
+def random_forest_cv(features, y, groups, labels, task, prefix, grouped=True):
+    """5 fold random forest; the grouped run also writes reports and figures."""
+    y = np.asarray(y)
+    folds = make_folds(features, y, groups, grouped)
+    accs, baccs, f1s = [], [], []
+    cm = np.zeros((len(labels), len(labels)), int)
+    importance = np.zeros(features.shape[1])
+    predictions = np.empty(len(y), dtype=object)
+
+    for train, test in folds:
+        clf = RandomForestClassifier(n_estimators=RF_TREES, class_weight="balanced",
+                                     n_jobs=2, random_state=SEED)
+        clf.fit(features.iloc[train], y[train])
+        pred = clf.predict(features.iloc[test])
+        predictions[test] = pred
+        accs.append(accuracy_score(y[test], pred))
+        baccs.append(balanced_accuracy_score(y[test], pred))
+        f1s.append(f1_score(y[test], pred, average="macro"))
+        cm += confusion_matrix(y[test], pred, labels=labels)
+        importance += clf.feature_importances_ / len(folds)
+
+    if grouped:
+        plot_confusion(cm, labels, f"{task}: random forest, 5 fold CV grouped by recording session",
+                       f"{FIG_DIR}/{prefix}_rf_confusion.png")
+        with open(f"{OUT_DIR}/{prefix}_rf_report.txt", "w") as fh:
+            fh.write(classification_report(y, predictions, labels=labels))
+        ranked = pd.Series(importance, index=features.columns).sort_values(ascending=False)
+        ranked.to_csv(f"{OUT_DIR}/{prefix}_rf_feature_importance.csv")
+        plt.figure(figsize=(6, 6))
+        ranked.head(15)[::-1].plot(kind="barh")
+        plt.title(f"{task}: top 15 features")
+        plt.tight_layout()
+        plt.savefig(f"{FIG_DIR}/{prefix}_rf_feature_importance.png", dpi=150)
+        plt.close()
+
+    split_name = "grouped" if grouped else "random"
+    row = summarise_scores(task, "random forest", f"5 fold, {split_name}", accs, baccs, f1s)
+    print(row)
+    return row
+
+
+# ---------------------------------------------------------------- 3. baselines
+
+def majority_baseline(task, y):
+    """Accuracy of always predicting the most common class."""
+    shares = y.value_counts(normalize=True)
+    return dict(task=task, model="majority class baseline", cv="",
+                accuracy=shares.max(), accuracySd=0,
+                balancedAccuracy=1 / len(shares), balancedAccuracySd=0, macroF1=np.nan)
+
+
+# ---------------------------------------------------------------- 4. transformer
+
+class SpectrogramTransformer(nn.Module):
+    """Small vision style transformer on 8 x 8 patches of a 64 x 128 log mel spectrogram."""
+
+    def __init__(self, n_mels=64, n_frames=128, patch_f=8, patch_t=8, dim=64,
+                 heads=4, layers=2, n_classes=3, dropout=0.3):
+        super().__init__()
+        self.patch_f, self.patch_t = patch_f, patch_t
+        n_patches = (n_mels // patch_f) * (n_frames // patch_t)
+        self.embed = nn.Linear(patch_f * patch_t, dim)
+        self.cls = nn.Parameter(torch.zeros(1, 1, dim))
+        self.pos = nn.Parameter(torch.randn(1, n_patches + 1, dim) * 0.02)
+        layer = nn.TransformerEncoderLayer(dim, heads, dim * 2, dropout, batch_first=True)
+        self.encoder = nn.TransformerEncoder(layer, layers)
+        self.dropout = nn.Dropout(dropout)
+        self.head = nn.Linear(dim, n_classes)
+
+    def forward(self, x):
+        batch = x.shape[0]
+        patches = (x.unfold(1, self.patch_f, self.patch_f)
+                    .unfold(2, self.patch_t, self.patch_t)
+                    .contiguous()
+                    .view(batch, -1, self.patch_f * self.patch_t))
+        tokens = torch.cat([self.cls.expand(batch, -1, -1), self.embed(patches)], 1) + self.pos
+        return self.head(self.dropout(self.encoder(tokens)[:, 0]))
+
+
+def spec_augment(batch):
+    """Light SpecAugment: one frequency mask and one time mask per clip."""
+    batch = batch.clone()
+    for i in range(batch.shape[0]):
+        f0 = np.random.randint(0, 64 - 8)
+        batch[i, f0:f0 + np.random.randint(0, 8)] = 0
+        t0 = np.random.randint(0, 128 - 16)
+        batch[i, :, t0:t0 + np.random.randint(0, 16)] = 0
+    return batch
+
+
+def predict(model, x, batch_size=256):
+    model.eval()
+    with torch.no_grad():
+        return torch.cat([model(x[i:i + batch_size]).argmax(1)
+                          for i in range(0, len(x), batch_size)]).numpy()
+
+
+def train_one_fold(mel, y_index, train, test, n_classes, epochs, fold):
+    """Train on one fold; return test predictions and held out balanced accuracy per epoch."""
+    torch.manual_seed(fold)
+    model = SpectrogramTransformer(n_classes=n_classes)
+    class_counts = np.bincount(y_index[train], minlength=n_classes).clip(1)
+    weights = torch.tensor(len(train) / (n_classes * class_counts), dtype=torch.float32)
+    criterion = nn.CrossEntropyLoss(weight=weights)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=1e-2)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, epochs)
+    loader = DataLoader(TensorDataset(torch.tensor(mel[train]), torch.tensor(y_index[train])),
+                        batch_size=64, shuffle=True)
+    x_test = torch.tensor(mel[test])
+
+    curve = []
+    for _ in range(epochs):
+        model.train()
+        for xb, yb in loader:
+            optimizer.zero_grad()
+            loss = criterion(model(spec_augment(xb)), yb)
+            loss.backward()
+            optimizer.step()
+        scheduler.step()
+        pred = predict(model, x_test)
+        curve.append(balanced_accuracy_score(y_index[test], pred))
+    return pred, curve
+
+
+def transformer_cv(mel, y, groups, labels, task, prefix, epochs):
+    """Grouped 5 fold CV of the transformer, with confusion matrix and learning curves."""
+    y = np.asarray(y)
+    label_index = {label: i for i, label in enumerate(labels)}
+    y_index = np.array([label_index[v] for v in y])
+    folds = make_folds(mel, y, groups, grouped=True)
+    accs, baccs, f1s, curves = [], [], [], []
+    cm = np.zeros((len(labels), len(labels)), int)
+
+    for fold, (train, test) in enumerate(folds):
+        pred, curve = train_one_fold(mel, y_index, train, test, len(labels), epochs, fold)
+        curves.append(curve)
+        accs.append(accuracy_score(y_index[test], pred))
+        baccs.append(balanced_accuracy_score(y_index[test], pred))
+        f1s.append(f1_score(y_index[test], pred, average="macro"))
+        cm += confusion_matrix(y_index[test], pred, labels=range(len(labels)))
+        print(f"  {task} fold {fold + 1}: acc {accs[-1]:.3f}, balanced {baccs[-1]:.3f}", flush=True)
+
+    plot_confusion(cm, labels, f"{task}: transformer, 5 fold CV grouped by recording session",
+                   f"{FIG_DIR}/{prefix}_transformer_confusion.png", "Purples")
+    plt.figure(figsize=(6, 4))
+    for fold, curve in enumerate(curves):
+        plt.plot(curve, alpha=0.7, label=f"fold {fold + 1}")
+    plt.xlabel("Epoch")
+    plt.ylabel("Held out balanced accuracy")
+    plt.title(f"{task}: transformer training")
+    plt.legend(fontsize=7)
+    plt.tight_layout()
+    plt.savefig(f"{FIG_DIR}/{prefix}_transformer_curves.png", dpi=150)
+    plt.close()
+
+    row = summarise_scores(task, "transformer (from scratch, log mel)", "5 fold, grouped", accs, baccs, f1s)
+    print(row, flush=True)
+    return row
+
+
+# ---------------------------------------------------------------- main
+
+def main(feat_dir="feat"):
+    np.random.seed(SEED)
+    torch.manual_seed(SEED)
+    torch.set_num_threads(2)
+    os.makedirs(FIG_DIR, exist_ok=True)
+    os.makedirs(OUT_DIR, exist_ok=True)
+    epochs = int(os.environ.get("EPOCHS", "25"))
+    species_transformer = os.environ.get("SPECIES_TRANSFORMER", "1") == "1"
+
+    features, mel_uint8, meta = load_features(feat_dir)
+    mel = mel_to_float(mel_uint8)
+    groups = meta["session"].values
+    print(f"{len(meta)} clips, {meta['species'].nunique()} species, "
+          f"{meta['session'].nunique()} recording sessions")
+    meta.to_csv(f"{OUT_DIR}/clip_metadata.csv", index=False)
+    counts = meta.groupby("species").agg(clips=("filename", "size"), sessions=("session", "nunique"))
+    counts.to_csv(f"{OUT_DIR}/clips_per_species.csv")
+    print(counts)
+
+    species_order = sorted(meta["species"].unique())
+    group_order = sorted(meta["group"].unique())
+    tasks = [("Species (9 way)", "species", species_order, "05_species"),
+             ("Taxonomic group (3 way)", "group", group_order, "06_group")]
+
+    run_info = unsupervised_check(features, meta, group_order)
+
+    results = []
+    start = time.time()
+    for task, column, labels, prefix in tasks:
+        for grouped in (True, False):
+            results.append(random_forest_cv(features, meta[column], groups, labels, task, prefix, grouped))
+    print(f"RF done in {time.time() - start:.0f}s", flush=True)
+
+    for task, column, _, _ in tasks:
+        results.append(majority_baseline(task, meta[column]))
+
+    def save_summary():
+        pd.DataFrame(results).to_csv(f"{OUT_DIR}/model_summary.csv", index=False)
+
+    start = time.time()
+    results.append(transformer_cv(mel, meta["group"], groups, group_order,
+                                  "Taxonomic group (3 way)", "06_group", epochs))
+    print(f"transformer group done in {time.time() - start:.0f}s", flush=True)
+    save_summary()
+    if species_transformer:
+        results.append(transformer_cv(mel, meta["species"], groups, species_order,
+                                      "Species (9 way)", "05_species", epochs))
+    save_summary()
+
+    with open(f"{OUT_DIR}/run_info.json", "w") as fh:
+        json.dump(dict(clips=len(meta), sessions=int(meta["session"].nunique()), **run_info), fh, indent=1)
+    print("Done.")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1] if len(sys.argv) > 1 else "feat")
